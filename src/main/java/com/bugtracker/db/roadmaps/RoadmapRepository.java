@@ -13,10 +13,8 @@ import net.bytebuddy.asm.Advice.OffsetMapping.Sort;
 public interface RoadmapRepository extends JpaRepository<Roadmap, Integer> {
 
 	//public static final String FIND_PROJECTS = "SELECT * FROM roadmaps";
-
-	public Optional<Roadmap> findByFieldId(Integer fieldid);
 	
-	public Optional<Roadmap> findByFieldIdAndUserId(Integer fieldId, Integer userId);
+	public Optional<Roadmap> findByIdAndUserId(Integer fieldId, Integer userId);
 	 
 	//@Query(value = FIND_PROJECTS, nativeQuery = true)
 	public List<Roadmap> findAllByUserId(Integer userId);

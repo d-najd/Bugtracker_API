@@ -17,7 +17,7 @@ public class Roadmap {
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
     @Column(name = "field_id")
-    private Integer fieldId;
+    private Integer id;
     @Column(name = "user_id")
     private Integer userId;
     @Column(name = "title")
@@ -54,11 +54,11 @@ public class Roadmap {
 	}
 
 	public Integer getField_id() {
-		return fieldId;
+		return id;
 	}
 
-	public void setField_id(Integer field_id) {
-		this.fieldId = field_id;
+	public void setField_id(Integer id) {
+		this.id = id;
 	}
 
 	public String getTitle() {
