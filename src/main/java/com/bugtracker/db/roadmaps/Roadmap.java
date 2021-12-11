@@ -9,6 +9,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Table(name="roadmaps")
 @Entity
 public class Roadmap {
@@ -23,18 +25,18 @@ public class Roadmap {
     @Column(name = "description")
     private String description;
     @Column(name = "start_date")
-    private Date startDate;
+    private String startDate;
     @Column(name = "due_date")
-    private Date dueDate;
+    private String dueDate;
     @Column(name = "date_created")
-    private Date dateCreated;
+    private String dateCreated;
 
     public Roadmap() {
     	super();
     }
 
-	public Roadmap(Integer field_id, Integer user_id, String title, String description, Date startDate,
-			Date dueDate, Date dateCreated) {
+	public Roadmap(Integer field_id, Integer user_id, String title, String description, String startDate,
+			String dueDate, String dateCreated) {
 		super();
 		this.title = title;
 		this.description = description;
@@ -75,27 +77,27 @@ public class Roadmap {
 		this.description = description;
 	}
 
-	public Date getStartDate() {
+	public String getStartDate() {
 		return startDate;
 	}
 
-	public void setStartDate(Date startDate) {
+	public void setStartDate(String startDate) {
 		this.startDate = startDate;
 	}
 
-	public Date getDueDate() {
+	public String getDueDate() {
 		return dueDate;
 	}
 
-	public void setDueDate(Date dueDate) {
+	public void setDueDate(String dueDate) {
 		this.dueDate = dueDate;
 	}
 
-	public Date getDateCreated() {
+	public String getDateCreated() {
 		return dateCreated;
 	}
 
-	public void setDateCreated(Date dateCreated) {
+	public void setDateCreated(String dateCreated) {
 		this.dateCreated = dateCreated;
 	}
 	

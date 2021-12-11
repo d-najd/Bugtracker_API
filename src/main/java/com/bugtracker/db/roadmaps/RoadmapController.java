@@ -35,26 +35,33 @@ public class RoadmapController {
     public Optional<Roadmap> getRoadmapByFieldId(@PathVariable("userid") Integer userid, @PathVariable("fieldid") Integer fieldid){
     	return roadmapRepository.findByFieldIdAndUserId(fieldid, userid);
     }
+
+    //NOTE everyone will be able to update whichever field they choose, needs to check if the
+    //userid is authenticated and if he is updating his field id and not the field id of someone else
+    @ResponseBody
+    @PutMapping("/roadmaps/{userid}/{fieldid}")
+    public Roadmap editRoadmap(@PathVariable("userid") Integer userid, @PathVariable("fieldid") Integer fieldid, @RequestBody Roadmap roadmap){
+    	return roadmapRepository.save(roadmap);
+    	
+    }
     
+    @ResponseBody
+    @PostMapping("/roadmaps/{userid}")
+    public Roadmap addRoadmap(@PathVariable("userid") Integer userid, @RequestBody Roadmap roadmap){
+    	return roadmapRepository.save(roadmap);
+    }
+    
+    @ResponseBody
+    @DeleteMapping("/roadmaps/{userid}/{fieldid}")
+    public Roadmap removeRoadmap(@PathVariable("userid") Integer userid, @PathVariable Integer fieldid) {
+    	roadmapRepository.deleteById(fieldid);
+    	return new Roadmap();
+    }
+
     @ResponseBody
     @GetMapping("/roadmaps/{fieldid}")
     public Optional<Roadmap> getRoadmapByFieldId(@PathVariable Integer fieldid) {
     	return roadmapRepository.findById(fieldid);
     }
     
-    @PostMapping("/roadmaps")
-    public void addRoadmap(@RequestBody Roadmap roadmap) {
-    	roadmapRepository.save(roadmap);
-    }
-
-    @PutMapping("/roadmaps")
-    public void editRoadmap(@RequestBody Roadmap roadmap) {
-    	roadmapRepository.save(roadmap);
-    }
-    
-    @ResponseBody
-    @DeleteMapping("/roadmaps/{fieldid}")
-    public void removeRoadmap(@PathVariable Integer fieldid) {
-    	roadmapRepository.deleteById(fieldid);
-    }
 }
