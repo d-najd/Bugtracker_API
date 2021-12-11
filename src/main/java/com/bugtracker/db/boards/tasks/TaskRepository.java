@@ -9,8 +9,8 @@ public interface TaskRepository extends JpaRepository<Task, Integer> {
 
 	//public static final String FIND_PROJECTS = "SELECT * FROM roadmaps";
 	
-	public Optional<Task> findByIdAndUserId(Integer fieldId, Integer userId);
+	public Optional<Task> findByIdAndBoardId(Integer boardId, Integer userId);
 	 
 	//@Query(value = FIND_PROJECTS, nativeQuery = true)
-	public List<Task> findAllByUserId(Integer userId);
+	public List<Task> findAllByBoardId(Integer boardId);
 }

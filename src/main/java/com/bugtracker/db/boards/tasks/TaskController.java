@@ -24,15 +24,15 @@ public class TaskController {
 	    }
 	    
 	    @ResponseBody
-	    @GetMapping("/tasks/all/{userid}")
-	    public List<Task> getAllTasksByUID(@PathVariable Integer userid) {
-	        return taskRepository.findAllByUserId(userid);
+	    @GetMapping("/tasks/all/{boardId}")
+	    public List<Task> getAllTasksByBoardId(@PathVariable Integer boardId) {
+	        return taskRepository.findAllByBoardId(boardId);
 	    }
 	    
 	    @ResponseBody
-	    @GetMapping("/tasks/{userid}/{id}")
-	    public Optional<Task> getTaskByFieldIdAndUID(@PathVariable("userid") Integer userid, @PathVariable("id") Integer id){
-	    	return taskRepository.findByIdAndUserId(id, userid);
+	    @GetMapping("/tasks/{boardId}/{id}")
+	    public Optional<Task> getTaskByFieldIdAndBoardId(@PathVariable("boardId") Integer boardId, @PathVariable("id") Integer id){
+	    	return taskRepository.findByIdAndBoardId(id, boardId);
 	    }
 
 	    //NOTE everyone will be able to update whichever field they choose, needs to check if the
@@ -51,8 +51,8 @@ public class TaskController {
 	    
 	    @ResponseBody
 	    @DeleteMapping("/tasks/{fieldid}")
-	    public Task removeTask(@PathVariable Integer fieldid) {
-	    	taskRepository.deleteById(fieldid);
+	    public Task removeTask(@PathVariable Integer id) {
+	    	taskRepository.deleteById(id);
 	    	return new Task();
 	    }
 

@@ -1,11 +1,16 @@
 package com.bugtracker.db.boards;
 
+import java.util.List;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
+
+import com.bugtracker.db.boards.tasks.Task;
 
 @Table(name="boards")
 @Entity
@@ -18,23 +23,23 @@ public class Board {
     private Integer userId;
     @Column(name = "title")
     private String title;
-    
-    public Board() {
-    	super();
-    }
-    
-	public Board(Integer fieldId, Integer userId, String title) {
+        
+	public Board() {
 		super();
-		this.id = fieldId;
+	}
+	
+	public Board(Integer id, Integer userId, String title) {
+		super();
+		this.id = id;
 		this.userId = userId;
 		this.title = title;
 	}
 	
-	public Integer getFieldId() {
+	public Integer getId() {
 		return id;
 	}
-	public void setFieldId(Integer fieldId) {
-		this.id = fieldId;
+	public void setId(Integer id) {
+		this.id = id;
 	}
 	public Integer getUserId() {
 		return userId;

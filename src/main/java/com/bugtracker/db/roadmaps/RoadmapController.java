@@ -39,10 +39,9 @@ public class RoadmapController {
     //NOTE everyone will be able to update whichever field they choose, needs to check if the
     //userid is authenticated and if he is updating his field id and not the field id of someone else
     @ResponseBody
-    @PutMapping("/roadmaps/{fieldid}")
-    public Roadmap editRoadmap(@PathVariable("fieldid") Integer fieldid, @RequestBody Roadmap roadmap){
+    @PutMapping("/roadmaps")
+    public Roadmap editRoadmap(@RequestBody Roadmap roadmap){
     	return roadmapRepository.save(roadmap);
-    	
     }
     
     @ResponseBody
