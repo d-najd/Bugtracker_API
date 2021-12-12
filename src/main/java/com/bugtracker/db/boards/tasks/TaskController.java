@@ -13,11 +13,19 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.bugtracker.db.boards.Board;
+import com.bugtracker.db.boards.BoardRepository;
+import com.kriscfoster.school.subject.Subject;
+import com.kriscfoster.school.teacher.Teacher;
+
 @RestController
 public class TaskController {
 	 	@Autowired
 	    TaskRepository taskRepository;
 	   
+		@Autowired
+		BoardRepository boardRepository;
+	 	
 	    @GetMapping("/tasks/all")
 	    public List<Task> getAllTasks() {
 	        return taskRepository.findAll();
@@ -48,5 +56,16 @@ public class TaskController {
 	    @GetMapping("/tasks/{fieldid}")
 	    public Optional<Task> getTaskById(@PathVariable Integer id) {
 	    	return taskRepository.findById(id);
+	    }
+	    
+	    @PutMapping("/tasks/{subjectId}/board/{teacherId}")
+	    Task assignTeacherToSubject(
+	            @PathVariable Integer subjectId,
+	            @PathVariable Integer teacherId
+	    ) {
+	        Task subject = taskRepository.findById(subjectId).get();
+	        Board teacher = boardRepository.findById(teacherId).get();
+	        subject.setBoard(teacher);
+	        return taskRepository.save(subject);
 	    }
 }
