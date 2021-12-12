@@ -1,5 +1,6 @@
 package com.bugtracker.db.boards;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -8,6 +9,9 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
@@ -27,9 +31,13 @@ public class Board {
     @Column(name = "title")
     private String title;
     
-    @JsonIgnore
-    @OneToMany(mappedBy = "board")
-    private Set<Task> tasks;
+    @ManyToMany
+    @JoinTable(
+            name = "column_test_2",
+            joinColumns = @JoinColumn(name = "board_id"),
+            inverseJoinColumns = @JoinColumn(name = "task_id_new")
+    )
+    Set<Task> tasks = new HashSet<>();
         
 	public Board() {
 		super();

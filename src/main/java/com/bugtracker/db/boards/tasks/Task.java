@@ -1,5 +1,8 @@
 package com.bugtracker.db.boards.tasks;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -7,11 +10,13 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import com.bugtracker.db.boards.Board;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.kriscfoster.school.teacher.Teacher;
 
 @Table(name="board_tasks")
@@ -22,8 +27,6 @@ public class Task {
     @GeneratedValue(strategy=GenerationType.IDENTITY)
     @Column(name = "task_id")
     private Integer taskId;
-    @Column(name = "id")
-    private Integer id;
     @Column(name = "title")
     private String title;
     @Column(name = "description")
@@ -31,9 +34,9 @@ public class Task {
     @Column(name = "date_created")
     private String dateCreated;
     
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "bid", referencedColumnName = "id")
-    private Board board;
+    @JsonIgnore
+    @ManyToMany(mappedBy = "tasks")
+    private Set<Board> boards = new HashSet<>();
     
     public Task(){
     	super();
@@ -41,10 +44,6 @@ public class Task {
 
 	public Integer getTaskId() {
 		return taskId;
-	}
-
-	public Integer getId() {
-		return id;
 	}
 
 	public String getTitle() {
@@ -59,11 +58,11 @@ public class Task {
 		return dateCreated;
 	}
 
-	public Board getBoard() {
-		return board;
+	public Set<Board> getBoards() {
+		return boards;
 	}
 
-	public void setBoard(Board board) {
-		this.board = board;
+	public void setBoards(Set<Board> boards) {
+		this.boards = boards;
 	}
 }
