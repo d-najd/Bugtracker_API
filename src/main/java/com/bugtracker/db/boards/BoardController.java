@@ -14,12 +14,17 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.bugtracker.db.boards.tasks.Task;
+import com.bugtracker.db.boards.tasks.TaskRepository;
 import com.bugtracker.db.roadmaps.Roadmap;
 
 @RestController
 public class BoardController {
 	@Autowired
 	BoardRepository boardRepository;
+	
+	@Autowired
+	TaskRepository taskRepository;
 	
 	@GetMapping("/boards/all")
 	public List<Board> getAllBoards(){
@@ -49,5 +54,16 @@ public class BoardController {
     public Board removeBoard(@PathVariable Integer id) {
     	boardRepository.deleteById(id);
     	return new Board();
+    }
+    
+    @PutMapping("/boards/{id}/task/{taskId}")
+    Board addStudentToSubject(
+            @PathVariable Integer id,
+            @PathVariable Integer taskId
+    ) {
+        Board board = boardRepository.findById(id).get();
+        Task task = taskRepository.findById(taskId).get();
+        board.tasks.add(task);
+        return boardRepository.save(board);
     }
 }
