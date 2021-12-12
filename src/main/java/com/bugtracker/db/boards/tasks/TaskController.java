@@ -22,18 +22,6 @@ public class TaskController {
 	    public List<Task> getAllTasks() {
 	        return taskRepository.findAll();
 	    }
-	    
-	    @ResponseBody
-	    @GetMapping("/tasks/all/{boardId}")
-	    public List<Task> getAllTasksByBoardId(@PathVariable Integer boardId) {
-	        return taskRepository.findAllByBoardId(boardId);
-	    }
-	    
-	    @ResponseBody
-	    @GetMapping("/tasks/{boardId}/{id}")
-	    public Optional<Task> getTaskByFieldIdAndBoardId(@PathVariable("boardId") Integer boardId, @PathVariable("id") Integer id){
-	    	return taskRepository.findByIdAndBoardId(id, boardId);
-	    }
 
 	    //NOTE everyone will be able to update whichever field they choose, needs to check if the
 	    //userid is authenticated and if he is updating his field id and not the field id of someone else
