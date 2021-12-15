@@ -33,9 +33,9 @@ public class Board {
     
     @ManyToMany
     @JoinTable(
-            name = "column_test_2",
+            name = "boards_tasks_join",
             joinColumns = @JoinColumn(name = "board_id"),
-            inverseJoinColumns = @JoinColumn(name = "task_id_new")
+            inverseJoinColumns = @JoinColumn(name = "task_id")
     )
     Set<Task> tasks = new HashSet<>();
         
