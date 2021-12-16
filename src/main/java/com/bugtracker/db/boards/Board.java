@@ -62,5 +62,9 @@ public class Board {
 	public void setTasks(Set<Task> tasks) {
 		this.tasks = tasks;
 	}
+
+	public void addTask(Task task) {
+		tasks.add(task);
+	}
     
 }

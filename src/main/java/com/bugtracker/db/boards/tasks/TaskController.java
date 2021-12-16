@@ -10,23 +10,29 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.bugtracker.boards.tasks.join.BTJRepository;
 import com.bugtracker.db.boards.Board;
 import com.bugtracker.db.boards.BoardRepository;
 import com.kriscfoster.school.subject.Subject;
 import com.kriscfoster.school.teacher.Teacher;
 
 @RestController
+@RequestMapping("/tasks")
 public class TaskController {
 	 	@Autowired
 	    TaskRepository taskRepository;
 	   
 		@Autowired
 		BoardRepository boardRepository;
+		
+		@Autowired
+		BTJRepository btjRepository;
 	 	
-	    @GetMapping("/tasks/all")
+	    @GetMapping("/all")
 	    public List<Task> getAllTasks() {
 	        return taskRepository.findAll();
 	    }
@@ -34,38 +40,43 @@ public class TaskController {
 	    //NOTE everyone will be able to update whichever field they choose, needs to check if the
 	    //userid is authenticated and if he is updating his field id and not the field id of someone else
 	    @ResponseBody
-	    @PutMapping("/tasks")
+	    @PutMapping
 	    public Task editTask(@RequestBody Task task){
 	    	return taskRepository.save(task);
 	    }
 	    
 	    @ResponseBody
-	    @PostMapping("/tasks")
-	    public Task addTask(@RequestBody Task task){
-	    	return taskRepository.save(task);
+	    @PostMapping
+	    //public Task addTask(@RequestBody Task task)
+	    public String addTask(){
+	    	return ("this function is decapitated, please use /tasks/board/{boardId} \n"
+	    			+ "for creating and setting task to board");
+	    	
+	    	//return taskRepository.save(task);
 	    }
 	    
 	    @ResponseBody
-	    @DeleteMapping("/tasks/{fieldid}")
+	    @DeleteMapping("/{id}")
 	    public Task removeTask(@PathVariable Integer id) {
 	    	taskRepository.deleteById(id);
 	    	return new Task();
 	    }
 
 	    @ResponseBody
-	    @GetMapping("/tasks/{fieldid}")
+	    @GetMapping("/{id}")
 	    public Optional<Task> getTaskById(@PathVariable Integer id) {
 	    	return taskRepository.findById(id);
 	    }
 	    
-	    @PutMapping("/tasks/{subjectId}/board/{teacherId}")
-	    Task assignTeacherToSubject(
-	            @PathVariable Integer subjectId,
-	            @PathVariable Integer teacherId
+	    @PostMapping("/board/{boardId}")
+	    Board createAndSetTaskToBoard(
+	    		@RequestBody Task task,
+	            @PathVariable Integer boardId
 	    ) {
-	        Task subject = taskRepository.findById(subjectId).get();
-	        Board teacher = boardRepository.findById(teacherId).get();
-	        subject.setBoard(teacher);
-	        return taskRepository.save(subject);
+	        taskRepository.save(task);
+	        Board board = boardRepository.findById(boardId).get();
+	        task = taskRepository.save(task);
+	        board.addTask(task);
+	        return boardRepository.save(board);
 	    }
 }

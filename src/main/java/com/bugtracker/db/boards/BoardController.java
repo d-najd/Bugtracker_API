@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -19,6 +20,7 @@ import com.bugtracker.db.boards.tasks.TaskRepository;
 import com.bugtracker.db.roadmaps.Roadmap;
 
 @RestController
+@RequestMapping("/boards")
 public class BoardController {
 	@Autowired
 	BoardRepository boardRepository;
@@ -26,38 +28,44 @@ public class BoardController {
 	@Autowired
 	TaskRepository taskRepository;
 	
-	@GetMapping("/boards/all")
+	@GetMapping("/all")
 	public List<Board> getAllBoards(){
 		return boardRepository.findAll();
 	}
 	
     @ResponseBody
-    @GetMapping("/boards/all/{userid}")
+    @GetMapping("/all/{userid}")
     public List<Board> getAllRoadmapsByUID(@PathVariable Integer userid) {
         return boardRepository.findAllByUserId(userid);
     }
+    
+    @GetMapping("/{id}")
+    public Board getBoard(@PathVariable Integer id){
+    	return boardRepository.findById(id).get();
+    }
 	
 	@ResponseBody
-	@PostMapping("/boards")
-    public Board addBoard(@RequestBody Board board){
+	@PostMapping
+    public Board createBoard(@RequestBody Board board){
     	return boardRepository.save(board);
     }
     
     @ResponseBody
-    @PutMapping("/boards")
+    @PutMapping
     public Board editBoard(@RequestBody Board board){
     	return boardRepository.save(board);
     }
     
     @ResponseBody
-    @DeleteMapping("/boards/{id}")
+    @DeleteMapping("/{id}")
     public Board removeBoard(@PathVariable Integer id) {
     	boardRepository.deleteById(id);
     	return new Board();
     }
     
-    @PutMapping("/boards/{id}/task/{taskId}")
-    Board addStudentToSubject(
+    /*
+    @PutMapping("/{id}/task/{taskId}")
+    Board setTaskToBoard(
             @PathVariable Integer id,
             @PathVariable Integer taskId
     ) {
@@ -65,5 +73,12 @@ public class BoardController {
         Task task = taskRepository.findById(taskId).get();
         board.tasks.add(task);
         return boardRepository.save(board);
+    }
+    */
+    
+    @PutMapping("/{id}/task/{taskId}")
+    public String setTaskToBoard() {
+    	return ("this method is disabled because with the current configuration "
+    			+ "it will break stuff");	
     }
 }
