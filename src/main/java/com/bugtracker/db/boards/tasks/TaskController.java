@@ -1,9 +1,14 @@
 package com.bugtracker.db.boards.tasks;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,8 +22,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.bugtracker.boards.tasks.join.BTJRepository;
 import com.bugtracker.db.boards.Board;
 import com.bugtracker.db.boards.BoardRepository;
-import com.kriscfoster.school.subject.Subject;
-import com.kriscfoster.school.teacher.Teacher;
 
 @RestController
 @RequestMapping("/tasks")
@@ -28,9 +31,6 @@ public class TaskController {
 	   
 		@Autowired
 		BoardRepository boardRepository;
-		
-		@Autowired
-		BTJRepository btjRepository;
 	 	
 	    @GetMapping("/all")
 	    public List<Task> getAllTasks() {
@@ -73,7 +73,6 @@ public class TaskController {
 	    		@RequestBody Task task,
 	            @PathVariable Integer boardId
 	    ) {
-	        taskRepository.save(task);
 	        Board board = boardRepository.findById(boardId).get();
 	        task = taskRepository.save(task);
 	        board.addTask(task);

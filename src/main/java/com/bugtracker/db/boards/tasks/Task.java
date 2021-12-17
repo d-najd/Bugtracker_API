@@ -27,6 +27,8 @@ public class Task {
     @GeneratedValue(strategy=GenerationType.IDENTITY)
     @Column(name = "id")
     private Integer id;
+    @Column(name = "position")
+    private Integer position;
     @Column(name = "title")
     private String title;
     @Column(name = "description")
@@ -44,6 +46,10 @@ public class Task {
 
 	public Integer getId() {
 		return id;
+	}
+	
+	public Integer getPosition() {
+		return position;
 	}
 
 	public String getTitle() {
