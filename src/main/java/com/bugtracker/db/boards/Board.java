@@ -26,6 +26,8 @@ public class Board {
     @GeneratedValue(strategy=GenerationType.IDENTITY)
     @Column(name = "id")
     private Integer id;
+    @Column(name = "position")
+    private Integer position;
     @Column(name = "user_id")
     private Integer userId;
     @Column(name = "title")
@@ -45,6 +47,10 @@ public class Board {
 
 	public Integer getId() {
 		return id;
+	}
+
+	public Integer getPosition() {
+		return position;
 	}
 
 	public Integer getUserId() {
