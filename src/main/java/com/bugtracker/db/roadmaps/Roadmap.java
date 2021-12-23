@@ -1,14 +1,19 @@
 package com.bugtracker.db.roadmaps;
 
 import java.sql.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 
+import com.bugtracker.project.Project;
+import com.bugtracker.project.roadmaps.Project_Roadmaps;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Table(name="roadmaps")
@@ -46,47 +51,28 @@ public class Roadmap {
 		this.dueDate = dueDate;
 		this.dateCreated = dateCreated;
 	}
-	
+
+
+
 	public Integer getId() {
 		return id;
-	}
-	public void setId(Integer id) {
-		this.id = id;
 	}
 	public Integer getUserId() {
 		return userId;
 	}
-	public void setUserId(Integer userId) {
-		this.userId = userId;
-	}
 	public String getTitle() {
 		return title;
-	}
-	public void setTitle(String title) {
-		this.title = title;
 	}
 	public String getDescription() {
 		return description;
 	}
-	public void setDescription(String description) {
-		this.description = description;
-	}
 	public String getStartDate() {
 		return startDate;
-	}
-	public void setStartDate(String startDate) {
-		this.startDate = startDate;
 	}
 	public String getDueDate() {
 		return dueDate;
 	}
-	public void setDueDate(String dueDate) {
-		this.dueDate = dueDate;
-	}
 	public String getDateCreated() {
 		return dateCreated;
-	}
-	public void setDateCreated(String dateCreated) {
-		this.dateCreated = dateCreated;
 	}
 }

@@ -20,10 +20,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.bugtracker.EmptyObj;
 import com.bugtracker.QueryConstructor;
 import com.bugtracker.db.boards.tasks.Task;
 import com.bugtracker.db.boards.tasks.TaskRepository;
-import com.bugtracker.db.roadmaps.EmptyObj;
 import com.bugtracker.db.roadmaps.Roadmap;
 
 @RestController
@@ -40,11 +40,10 @@ public class BoardController {
 		return boardRepository.findAll();
 	}
 	
-    @ResponseBody
-    @GetMapping("/all/{userid}")
-    public List<Board> getAllRoadmapsByUID(@PathVariable Integer userid) {
-        return boardRepository.findAllByUserId(userid);
-    }
+	@GetMapping("/all/{userId}")
+	public List<Board> getAllByUID(@PathVariable Integer userId){
+		return boardRepository.findAllByUserId(userId);
+	}
     
     @ResponseBody
     @GetMapping("/{id}")
@@ -81,11 +80,8 @@ public class BoardController {
 	    	queries.add(query1);
 	    	
 	    	QueryConstructor.sendQuery(queries);
-
 	    	
-	    	boardRepository.deleteById(id);
-	    	
-	    	
+	    	boardRepository.deleteById(id);     	
     	} catch (SQLException e) {
         	e.printStackTrace();
         	return ResponseEntity.ok("Server SQL exception");

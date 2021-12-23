@@ -1,4 +1,4 @@
-package com.bugtracker.db;
+package com.bugtracker.db.users;
 
 import java.util.Optional;
 

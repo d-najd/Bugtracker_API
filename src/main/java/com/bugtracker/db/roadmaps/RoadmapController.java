@@ -16,12 +16,20 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.bugtracker.project.roadmaps.Project_Roadmaps;
+import com.bugtracker.project.roadmaps.Project_RoadmapsIdentity;
+import com.bugtracker.project.roadmaps.Project_RoadmapsRepository;
+
 @RestController
 @RequestMapping("/roadmaps")
 public class RoadmapController {
     @Autowired
     RoadmapRepository roadmapRepository;
-   
+    
+ 	@Autowired
+    Project_RoadmapsRepository project_RoadmapsRepository;
+  
+    
     @GetMapping("/all")
     public List<Roadmap> getAllRoadmaps() {
         return roadmapRepository.findAll();
@@ -38,19 +46,22 @@ public class RoadmapController {
     public Optional<Roadmap> getRoadmapByFieldId(@PathVariable("userid") Integer userid, @PathVariable("fieldid") Integer fieldid){
     	return roadmapRepository.findByIdAndUserId(fieldid, userid);
     }
-
-    //NOTE everyone will be able to update whichever field they choose, needs to check if the
-    //userid is authenticated and if he is updating his field id and not the field id of someone else
+    
     @ResponseBody
-    @PutMapping
+    @PutMapping()
     public Roadmap editRoadmap(@RequestBody Roadmap roadmap){
-    	return roadmapRepository.save(roadmap);
+    	Roadmap roadmapNew = roadmapRepository.save(roadmap);
+    	return roadmapNew;
     }
     
     @ResponseBody
-    @PostMapping
-    public Roadmap addRoadmap(@RequestBody Roadmap roadmap){
-    	return roadmapRepository.save(roadmap);
+    @PostMapping("/{projectId}")
+    public Roadmap addRoadmap(@RequestBody Roadmap roadmap, @PathVariable Integer projectId){
+    	Roadmap newRoadmap = roadmapRepository.save(roadmap);
+    	Project_RoadmapsIdentity identity = new Project_RoadmapsIdentity(projectId, newRoadmap.getId());
+    	Project_Roadmaps project_roadmap = new Project_Roadmaps(identity);
+    	project_RoadmapsRepository.save(project_roadmap);
+    	return newRoadmap;
     }
     
     @DeleteMapping("/{fieldid}")
@@ -64,5 +75,4 @@ public class RoadmapController {
     public Optional<Roadmap> getRoadmapByFieldId(@PathVariable Integer fieldid) {
     	return roadmapRepository.findById(fieldid);
     }
-    
 }

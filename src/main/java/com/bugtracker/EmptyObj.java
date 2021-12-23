@@ -1,4 +1,4 @@
-package com.bugtracker.db.roadmaps;
+package com.bugtracker;
 
 import javax.persistence.Entity;
 

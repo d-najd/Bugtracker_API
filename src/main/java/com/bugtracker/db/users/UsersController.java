@@ -1,4 +1,4 @@
-package com.bugtracker.db;
+package com.bugtracker.db.users;
 
 import java.sql.SQLException;
 import java.util.List;

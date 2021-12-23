@@ -6,7 +6,7 @@ import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
-import com.bugtracker.db.User;
+import com.bugtracker.db.users.User;
 
 import net.bytebuddy.asm.Advice.OffsetMapping.Sort;
 
