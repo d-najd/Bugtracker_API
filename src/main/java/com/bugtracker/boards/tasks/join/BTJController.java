@@ -69,7 +69,7 @@ public class BTJController {
 	    @DeleteMapping("/board/{bid}/task/{tid}")
 	    public ResponseEntity<String> removeBTJ(
 	    		@PathVariable("bid") Integer bid,
-	    		@PathVariable("tid") Integer tid) {
+	    		@PathVariable("tid") Integer tid) {/*
 	    	final String query = "UPDATE board_tasks SET position = position - 1 WHERE EXISTS ("
 	    			+ "	SELECT boards_tasks_join.task_id"
 	    			+ "	FROM boards_tasks_join"
@@ -85,8 +85,9 @@ public class BTJController {
 	    	}
 	    	BTJRepository.deleteById(new BTJIdentity(bid, tid));
 	    	taskRepository.deleteById(tid);
+	    	*/
 	    	
-	    	return ResponseEntity.ok("ok");
+	    	return ResponseEntity.ok("the method is disabled until a case is added where it checks if the BTJ is in the project, it may not be needed but better be safe than sorry");
 	    }
 	    /**
 	     * swaps task from one board to another
@@ -97,11 +98,12 @@ public class BTJController {
 	     */
 	    
 	    @PutMapping("/taskid/{tid}/boardid/{bid}/newpos/{pos}")
-	    public EmptyObj swapTaskBoard(
+	    public ResponseEntity<String> swapTaskBoard(
 	    		@PathVariable Integer tid,
 	    		@PathVariable Integer bid,
 	    		@PathVariable Integer pos)
 	    {
+	    	/*
 	    	//update position in the second board
 	    	final String query = "UPDATE board_tasks"
 	    			+ " SET position = position + 1"
@@ -128,7 +130,10 @@ public class BTJController {
 	        	//TODO add a case if it fails to transfer the task to remove both boards to prevent memory leak and corruption
 	        	return null;
 	    	}
-	    	return new EmptyObj();
+	    	*/
+	    	return ResponseEntity.ok("the method is disabled until a case is added where it checks if the BTJ is in the project, it may not be needed but better be safe than sorry");
+
+	    	//return new EmptyObj();
 	    }
 	    
 	    

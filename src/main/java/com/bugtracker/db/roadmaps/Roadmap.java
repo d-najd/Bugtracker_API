@@ -13,7 +13,7 @@ import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 
 import com.bugtracker.project.Project;
-import com.bugtracker.project.roadmaps.Project_Roadmaps;
+import com.bugtracker.project.roadmaps.ProjectRoadmaps;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Table(name="roadmaps")
@@ -23,8 +23,6 @@ public class Roadmap {
     @GeneratedValue(strategy=GenerationType.IDENTITY)
     @Column(name = "id")
     private Integer id;
-    @Column(name = "user_id")
-    private Integer userId;
     @Column(name = "title")
     private String title;
     @Column(name = "description")
@@ -40,25 +38,24 @@ public class Roadmap {
 		super();
 	}
 
-	public Roadmap(Integer id, Integer userId, String title, String description, String startDate, String dueDate,
+	public Roadmap(Integer id, String title, String description, String startDate, String dueDate,
 			String dateCreated) {
 		super();
 		this.id = id;
-		this.userId = userId;
 		this.title = title;
 		this.description = description;
 		this.startDate = startDate;
 		this.dueDate = dueDate;
 		this.dateCreated = dateCreated;
 	}
-
-
+	
+	public Roadmap(String title) {
+		super();
+		this.title = title;
+	}
 
 	public Integer getId() {
 		return id;
-	}
-	public Integer getUserId() {
-		return userId;
 	}
 	public String getTitle() {
 		return title;

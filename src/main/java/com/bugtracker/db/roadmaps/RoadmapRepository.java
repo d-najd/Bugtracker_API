@@ -14,8 +14,8 @@ public interface RoadmapRepository extends JpaRepository<Roadmap, Integer> {
 
 	//public static final String FIND_PROJECTS = "SELECT * FROM roadmaps";
 	
-	public Optional<Roadmap> findByIdAndUserId(Integer fieldId, Integer userId);
+	//public Optional<Roadmap> findByIdAndUserId(Integer fieldId, Integer userId);
 	 
 	//@Query(value = FIND_PROJECTS, nativeQuery = true)
-	public List<Roadmap> findAllByUserId(Integer userId);
+	//public List<Roadmap> findAllByUserId(Integer userId);
 }

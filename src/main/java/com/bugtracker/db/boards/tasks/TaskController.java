@@ -5,6 +5,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -73,7 +74,17 @@ public class TaskController {
 	    		@RequestBody Task task,
 	            @PathVariable Integer boardId
 	    ) {
-	        Board board = boardRepository.findById(boardId).get();
+	    	boolean crash = false;
+	    	Board board = null;
+	    	try {
+	    		board = boardRepository.findById(boardId).get();
+	    	} catch (NoSuchElementException e){
+	    		System.out.print("\n\nWARNING, some moron is trying to save a task inside a nonexisting board");
+	    		crash = true;
+	    	}
+	    	if (crash == true) 
+	    		return new Board("can't save task to nonexisting board");
+	    		
 	        task = taskRepository.save(task);
 	        board.addTask(task);
 	        return boardRepository.save(board);

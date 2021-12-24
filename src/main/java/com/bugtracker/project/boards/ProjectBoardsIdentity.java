@@ -1,4 +1,4 @@
-package com.bugtracker.project.roadmaps;
+package com.bugtracker.project.boards;
 
 import java.io.Serializable;
 import java.util.Objects;
@@ -9,41 +9,40 @@ import javax.persistence.Embeddable;
 import org.springframework.lang.NonNull;
 
 @Embeddable
-public class Project_RoadmapsIdentity implements Serializable {
+public class ProjectBoardsIdentity implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
 	@NonNull
 	@Column(name = "project_id")
     private Integer projectId;
 	@NonNull
-	@Column(name = "roadmap_id")
-    private Integer roadmapId;
+	@Column(name = "board_id")
+    private Integer boardId;
 
-    public Project_RoadmapsIdentity() {
+    public ProjectBoardsIdentity() {
 
     }
 
-	public Project_RoadmapsIdentity(Integer projectId, Integer roadmapId) {
+	public ProjectBoardsIdentity(Integer projectId, Integer boardId) {
 		super();
 		this.projectId = projectId;
-		this.roadmapId = roadmapId;
+		this.boardId = boardId;
 	}
 
 	public Integer getProjectId() {
 		return projectId;
 	}
-
 	
 	public void setProjectId(Integer projectId) {
 		this.projectId = projectId;
 	}
-	
-	public Integer getRoadmapId() {
-		return roadmapId;
+
+	public Integer getBoardId() {
+		return boardId;
 	}
 
-	public void setRoadmapId(Integer roadmapId) {
-		this.roadmapId = roadmapId;
+	public void setBoardId(Integer boardId) {
+		this.boardId = boardId;
 	}
 
 	@Override
@@ -51,15 +50,15 @@ public class Project_RoadmapsIdentity implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        Project_RoadmapsIdentity that = (Project_RoadmapsIdentity) o;
+        ProjectBoardsIdentity that = (ProjectBoardsIdentity) o;
 
         if (!projectId.equals(that.projectId)) 
         	return false;
-        return roadmapId.equals(that.roadmapId);
+        return boardId.equals(that.boardId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(projectId, roadmapId);
+        return Objects.hash(projectId, boardId);
     }
 }

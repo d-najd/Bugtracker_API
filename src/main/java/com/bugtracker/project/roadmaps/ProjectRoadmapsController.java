@@ -31,13 +31,9 @@ import com.kriscfoster.school.teacher.Teacher;
 
 @RestController
 @RequestMapping("/project/roadmaps")
-public class Project_RoadmapsController {
-		public static final String dbLocation = "jdbc:mysql://localhost:3306/bugtracker_db?useSSL=false";
-		public static final String dbUname = "root";
-		public static final String dbPass = "j6t2gu6k46ek";
-		
+public class ProjectRoadmapsController {
 	 	@Autowired
-	    Project_RoadmapsRepository project_RoadmapsRepository;
+	    ProjectRoadmapsRepository projectRoadmapsRepository;
 	   
 		@Autowired
 		TaskRepository taskRepository;
@@ -46,8 +42,8 @@ public class Project_RoadmapsController {
 		BoardRepository boardRepository;
 	 	
 	    @GetMapping("/all")
-	    public List<Project_Roadmaps> getAllRoadmaps(){
-	    	return project_RoadmapsRepository.findAll();
+	    public List<ProjectRoadmaps> getAllRoadmaps(){
+	    	return projectRoadmapsRepository.findAll();
 	    	
 	    }
 	    

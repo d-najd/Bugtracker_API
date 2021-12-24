@@ -1,8 +1,12 @@
 package com.bugtracker.db.roadmaps;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import javax.persistence.EntityNotFoundException;
+
+import org.hibernate.annotations.common.util.impl.Log;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -16,9 +20,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.bugtracker.project.roadmaps.Project_Roadmaps;
-import com.bugtracker.project.roadmaps.Project_RoadmapsIdentity;
-import com.bugtracker.project.roadmaps.Project_RoadmapsRepository;
+import com.bugtracker.project.Project;
+import com.bugtracker.project.ProjectRepository;
+import com.bugtracker.project.roadmaps.ProjectRoadmaps;
+import com.bugtracker.project.roadmaps.ProjectRoadmapsIdentity;
+import com.bugtracker.project.roadmaps.ProjectRoadmapsRepository;
 
 @RestController
 @RequestMapping("/roadmaps")
@@ -27,40 +33,49 @@ public class RoadmapController {
     RoadmapRepository roadmapRepository;
     
  	@Autowired
-    Project_RoadmapsRepository project_RoadmapsRepository;
+    ProjectRoadmapsRepository projectRoadmapsRepository;
   
-    
-    @GetMapping("/all")
-    public List<Roadmap> getAllRoadmaps() {
-        return roadmapRepository.findAll();
+	@Autowired
+	ProjectRepository projectRepository;
+
+    @GetMapping("/all/{projectId}")
+    public List<Roadmap> getAllRoadmapsByProjectId(@PathVariable Integer projectId) {
+    	List <Integer> roadmapIds = new ArrayList<>();
+    	List<ProjectRoadmaps> sRoadmapsRaw = projectRoadmapsRepository.
+    			findAllByProjectRoadmapsIdentityProjectId(projectId);
+    	for (ProjectRoadmaps sRoadmap : sRoadmapsRaw) {
+    		roadmapIds.add(sRoadmap.getProjectRoadmapsIdentity().getRoadmapId());
+    	}    	
+    	
+        return roadmapRepository.findAllById(roadmapIds);
     }
     
-    @ResponseBody
-    @GetMapping("/all/{userid}")
-    public List<Roadmap> getAllRoadmaps(@PathVariable Integer userid) {
-        return roadmapRepository.findAllByUserId(userid);
-    }
-    
-    @ResponseBody
-    @GetMapping("/{userid}/{fieldid}")
-    public Optional<Roadmap> getRoadmapByFieldId(@PathVariable("userid") Integer userid, @PathVariable("fieldid") Integer fieldid){
-    	return roadmapRepository.findByIdAndUserId(fieldid, userid);
-    }
-    
-    @ResponseBody
-    @PutMapping()
+	@ResponseBody
+    @PutMapping
     public Roadmap editRoadmap(@RequestBody Roadmap roadmap){
-    	Roadmap roadmapNew = roadmapRepository.save(roadmap);
-    	return roadmapNew;
+    	return roadmapRepository.save(roadmap);
     }
     
     @ResponseBody
     @PostMapping("/{projectId}")
     public Roadmap addRoadmap(@RequestBody Roadmap roadmap, @PathVariable Integer projectId){
+    	boolean crash = false;
+    	try {
+    		Project project = projectRepository.getById(projectId);
+    		String title = project.getTitle();
+    	} catch(EntityNotFoundException e){
+    		System.out.print("\n\nWARRNING, some moron is trying to create a roadmap in nonexisting project, why not crash his phone instead?\n\n");
+    		crash = true;
+    	}
+    	
+    	if (crash == true) {
+    		return new Roadmap("Cant save a roadmap to a project that doesn't exist, seems dumb don't you think?");
+    	}
+    	
     	Roadmap newRoadmap = roadmapRepository.save(roadmap);
-    	Project_RoadmapsIdentity identity = new Project_RoadmapsIdentity(projectId, newRoadmap.getId());
-    	Project_Roadmaps project_roadmap = new Project_Roadmaps(identity);
-    	project_RoadmapsRepository.save(project_roadmap);
+    	ProjectRoadmapsIdentity identity = new ProjectRoadmapsIdentity(projectId, newRoadmap.getId());
+    	ProjectRoadmaps projectRoadmap = new ProjectRoadmaps(identity);
+    	projectRoadmapsRepository.save(projectRoadmap);
     	return newRoadmap;
     }
     

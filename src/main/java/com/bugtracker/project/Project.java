@@ -15,21 +15,27 @@ public class Project {
     @GeneratedValue(strategy=GenerationType.IDENTITY)
     @Column(name = "id")
     private Integer id;
+	@Column(name = "title")
+	private String title;
 	
 	public Project() {
 		super();
 	}
 	
-	public Project(Integer id) {
+	public Project(Integer id, String title) {
 		super();
 		this.id = id;
+		this.title = title;
 	}
 
 	public Integer getId() {
 		return id;
 	}
 
-	public void setId(Integer id) {
-		this.id = id;
+	public String getTitle() {
+		return title;
 	}
+
+	
+	
 }

@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import javax.persistence.EntityNotFoundException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,6 +27,13 @@ import com.bugtracker.QueryConstructor;
 import com.bugtracker.db.boards.tasks.Task;
 import com.bugtracker.db.boards.tasks.TaskRepository;
 import com.bugtracker.db.roadmaps.Roadmap;
+import com.bugtracker.project.Project;
+import com.bugtracker.project.ProjectRepository;
+import com.bugtracker.project.boards.ProjectBoards;
+import com.bugtracker.project.boards.ProjectBoardsIdentity;
+import com.bugtracker.project.boards.ProjectBoardsRepository;
+import com.bugtracker.project.roadmaps.ProjectRoadmaps;
+import com.bugtracker.project.roadmaps.ProjectRoadmapsIdentity;
 
 @RestController
 @RequestMapping("/boards")
@@ -35,14 +44,29 @@ public class BoardController {
 	@Autowired
 	TaskRepository taskRepository;
 	
+ 	@Autowired
+    ProjectBoardsRepository projectBoardsRepository;
+ 	
+	@Autowired
+	ProjectRepository projectRepository;
+	
+	
 	@GetMapping("/all")
-	public List<Board> getAllBoards(){
-		return boardRepository.findAll();
+	public List<Board> getAllBoardsOld() {
+    	System.out.print("\n\nWARRNING, this is an outdated method and probably performance heavy in the long run, use ip/all/{projectId} instead\n\n");
+    	return boardRepository.findAll();
 	}
 	
-	@GetMapping("/all/{userId}")
-	public List<Board> getAllByUID(@PathVariable Integer userId){
-		return boardRepository.findAllByUserId(userId);
+	@GetMapping("/all/{projectId}")
+	public List<Board> getAllBoards(@PathVariable Integer projectId){
+    	List <Integer> boardsIds = new ArrayList<>();
+    	List<ProjectBoards> sBoardsRaw = projectBoardsRepository.
+    			findAllByProjectBoardsIdentityProjectId(projectId);
+    	for (ProjectBoards sBoard : sBoardsRaw) {
+    		boardsIds.add(sBoard.getProjectBoardsIdentity().getBoardId());
+    	}    	
+    	
+        return boardRepository.findAllById(boardsIds);
 	}
     
     @ResponseBody
@@ -51,10 +75,33 @@ public class BoardController {
     	return boardRepository.findById(id).get();
     }
 	
+    @PostMapping
+    public ResponseEntity<String> createBoardOld(){
+    	return ResponseEntity.ok("this method has been decapitated, use ip/{projectId} instead");
+
+    }
+    
 	@ResponseBody
-	@PostMapping
-    public Board createBoard(@RequestBody Board board){
-    	return boardRepository.save(board);
+	@PostMapping("/{projectId}")
+    public Board createBoard(@RequestBody Board board, @PathVariable Integer projectId){
+    	boolean crash = false;
+    	try {
+    		Project project = projectRepository.getById(projectId);
+    		String title = project.getTitle();
+    	} catch(EntityNotFoundException e){
+    		System.out.print("\n\nWARRNING, some moron is trying to create a board in nonexisting project, why not crash his phone instead?\n\n");
+    		crash = true;
+    	}
+    	
+    	if (crash == true) {
+    		return new Board("can't save a board to nonexisting project, seems dumb don't you think?");
+    	}
+    	
+    	Board newBoard = boardRepository.save(board);
+    	ProjectBoardsIdentity identity = new ProjectBoardsIdentity(projectId, newBoard.getId());
+    	ProjectBoards projectBoard = new ProjectBoards(identity);
+    	projectBoardsRepository.save(projectBoard);
+    	return newBoard;
     }
     
     @ResponseBody
@@ -65,6 +112,7 @@ public class BoardController {
     
     @DeleteMapping("/{id}")
     public ResponseEntity<String> removeBoard(@PathVariable Integer id) {
+    	/*
     	try {
     		//set the other boards in the correct position
 	    	final String query = "UPDATE boards SET position = position - 1"
@@ -85,28 +133,10 @@ public class BoardController {
     	} catch (SQLException e) {
         	e.printStackTrace();
         	return ResponseEntity.ok("Server SQL exception");
-    	}  		
-    	return ResponseEntity.ok("ok");
-    }
-    
-    
-    /*
-    @PutMapping("/{id}/task/{taskId}")
-    Board setTaskToBoard(
-            @PathVariable Integer id,
-            @PathVariable Integer taskId
-    ) {
-        Board board = boardRepository.findById(id).get();
-        Task task = taskRepository.findById(taskId).get();
-        board.tasks.add(task);
-        return boardRepository.save(board);
-    }
-    */
-    
-    @PutMapping("/{id}/task/{taskId}")
-    public String setTaskToBoard() {
-    	return ("this method is disabled because with the current configuration "
-    			+ "it will break stuff");	
+    	} 
+    	*/		
+    	return ResponseEntity.ok("the function for now is diabled until there is added case where it checks if the task is in the selected project and only update the other tasks if it is in that project");
+    	
     }
     
     @PutMapping("/swap/first/{fId}/second/{sId}")
@@ -124,9 +154,8 @@ public class BoardController {
     		queries.add(query);
     		queries.add(query2);
     		QueryConstructor.sendQuery(queries);
-    	} catch (SQLException e) {
-        	e.printStackTrace();
-        	return null;
+    	} catch (EntityNotFoundException | SQLException e) {
+        	return new EmptyObj("well either it is a SQLException or you tried to swap boards which don't exist");
     	}
     	return new EmptyObj();
     }

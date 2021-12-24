@@ -32,7 +32,7 @@ public class ProjectController {
 	}
 	
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> removeRoadmap(@PathVariable Integer id) {
+    public ResponseEntity<String> removeProject(@PathVariable Integer id) {
     	projectRepository.deleteById(id);
     	return ResponseEntity.ok("ok");
     } 

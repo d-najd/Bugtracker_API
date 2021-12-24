@@ -28,8 +28,6 @@ public class Board {
     private Integer id;
     @Column(name = "position")
     private Integer position;
-    @Column(name = "user_id")
-    private Integer userId;
     @Column(name = "title")
     private String title;
     
@@ -44,6 +42,11 @@ public class Board {
 	public Board() {
 		super();
 	}
+	
+	public Board(String title) {
+		super();
+		this.title = title;
+	}
 
 	public Integer getId() {
 		return id;
@@ -51,10 +54,6 @@ public class Board {
 
 	public Integer getPosition() {
 		return position;
-	}
-
-	public Integer getUserId() {
-		return userId;
 	}
 
 	public String getTitle() {
