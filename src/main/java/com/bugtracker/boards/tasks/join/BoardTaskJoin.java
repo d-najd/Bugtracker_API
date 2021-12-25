@@ -25,13 +25,13 @@ import com.kriscfoster.school.teacher.Teacher;
 public class BoardTaskJoin {
 	
     @EmbeddedId
-    private BTJIdentity btjIdentity;
+    private BtjIdentity btjIdentity;
     
 	public BoardTaskJoin() {
 		super();
 	}
 
-	public BTJIdentity getBtjIdentity() {
+	public BtjIdentity getBtjIdentity() {
 		return btjIdentity;
 	}
 }

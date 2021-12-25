@@ -69,7 +69,8 @@ public class RoadmapController {
     	}
     	
     	if (crash == true) {
-    		return new Roadmap("Cant save a roadmap to a project that doesn't exist, seems dumb don't you think?");
+    		System.out.print("Cant save a roadmap to a project that doesn't exist, seems dumb don't you think?");
+    		return null;
     	}
     	
     	Roadmap newRoadmap = roadmapRepository.save(roadmap);

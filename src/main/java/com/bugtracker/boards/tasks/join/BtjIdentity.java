@@ -9,7 +9,7 @@ import javax.persistence.Embeddable;
 import org.springframework.lang.NonNull;
 
 @Embeddable
-public class BTJIdentity implements Serializable {
+public class BtjIdentity implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
 	@NonNull
@@ -19,11 +19,11 @@ public class BTJIdentity implements Serializable {
 	@Column(name = "task_id")
     private Integer taskId;
 
-    public BTJIdentity() {
+    public BtjIdentity() {
 
     }
 
-    public BTJIdentity(Integer boardId, Integer taskId) {
+    public BtjIdentity(Integer boardId, Integer taskId) {
         this.boardId = boardId;
         this.taskId = taskId;
     }
@@ -49,7 +49,7 @@ public class BTJIdentity implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        BTJIdentity that = (BTJIdentity) o;
+        BtjIdentity that = (BtjIdentity) o;
 
         if (!boardId.equals(that.boardId)) 
         	return false;

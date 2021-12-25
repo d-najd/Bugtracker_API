@@ -112,7 +112,7 @@ public class BoardController {
     
     @DeleteMapping("/{id}")
     public ResponseEntity<String> removeBoard(@PathVariable Integer id) {
-    	/*
+    	
     	try {
     		//set the other boards in the correct position
 	    	final String query = "UPDATE boards SET position = position - 1"
@@ -134,7 +134,6 @@ public class BoardController {
         	e.printStackTrace();
         	return ResponseEntity.ok("Server SQL exception");
     	} 
-    	*/		
     	return ResponseEntity.ok("the function for now is diabled until there is added case where it checks if the task is in the selected project and only update the other tasks if it is in that project");
     	
     }

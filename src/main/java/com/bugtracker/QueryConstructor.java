@@ -3,7 +3,9 @@ package com.bugtracker;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,7 +37,14 @@ public class QueryConstructor {
     	}
 	}
 	
-	
+	/**
+	 * 
+	 * @param query the input query
+	 * @return integer size of the query size
+	 * @apiNote use integers which are the values between 0-9 because bigger wont work, also doens't account if there is - before the integer 
+	 * @throws SQLException
+	 */
+
     
     /*
      *         final String INSERT_USERS_SQL = "INSERT INTO board_tasks" +

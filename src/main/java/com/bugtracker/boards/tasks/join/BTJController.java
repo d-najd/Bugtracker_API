@@ -3,6 +3,7 @@ package com.bugtracker.boards.tasks.join;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -27,6 +28,7 @@ import com.bugtracker.db.boards.Board;
 import com.bugtracker.db.boards.BoardRepository;
 import com.bugtracker.db.boards.tasks.Task;
 import com.bugtracker.db.boards.tasks.TaskRepository;
+import com.bugtracker.project.boards.ProjectBoards;
 import com.kriscfoster.school.subject.Subject;
 import com.kriscfoster.school.teacher.Teacher;
 
@@ -38,7 +40,7 @@ public class BTJController {
 		public static final String dbPass = WebConfiguration.dbPass;
 		
 	 	@Autowired
-	    BTJRepository BTJRepository;
+	    BTJRepository btjRepository;
 	   
 		@Autowired
 		TaskRepository taskRepository;
@@ -48,7 +50,7 @@ public class BTJController {
 	 	
 	    @GetMapping("/all")
 	    public List<BoardTaskJoin> getAllBTJ(){
-	    	return BTJRepository.findAll();
+	    	return btjRepository.findAll();
 	    }
 	    /*
 	    @GetMapping()
@@ -69,7 +71,7 @@ public class BTJController {
 	    @DeleteMapping("/board/{bid}/task/{tid}")
 	    public ResponseEntity<String> removeBTJ(
 	    		@PathVariable("bid") Integer bid,
-	    		@PathVariable("tid") Integer tid) {/*
+	    		@PathVariable("tid") Integer tid) {
 	    	final String query = "UPDATE board_tasks SET position = position - 1 WHERE EXISTS ("
 	    			+ "	SELECT boards_tasks_join.task_id"
 	    			+ "	FROM boards_tasks_join"
@@ -83,10 +85,9 @@ public class BTJController {
 		    	//TODO add case where the entire column gets removed if something fucks up and you get here
 	        	return null;
 	    	}
-	    	BTJRepository.deleteById(new BTJIdentity(bid, tid));
+	    	btjRepository.deleteById(new BtjIdentity(bid, tid));
 	    	taskRepository.deleteById(tid);
-	    	*/
-	    	
+
 	    	return ResponseEntity.ok("the method is disabled until a case is added where it checks if the BTJ is in the project, it may not be needed but better be safe than sorry");
 	    }
 	    /**
@@ -97,44 +98,68 @@ public class BTJController {
 	     * @return empty object if the method failed EmptyObj if it is success
 	     */
 	    
-	    @PutMapping("/taskid/{tid}/boardid/{bid}/newpos/{pos}")
-	    public ResponseEntity<String> swapTaskBoard(
-	    		@PathVariable Integer tid,
-	    		@PathVariable Integer bid,
-	    		@PathVariable Integer pos)
-	    {
-	    	/*
+	    @PutMapping("/startboard/{fbid}/task/{tid}/endboard/{sbid}/newpos/{pos}")
+	    public EmptyObj swapTaskBoard(
+	    		@PathVariable("fbid") Integer fbid,
+	    		@PathVariable("tid") Integer tid,
+	    		@PathVariable("sbid") Integer sbid,
+	    		@PathVariable("pos") Integer pos
+	    		){
+	    	
+	    	//checking if the first task belongs to the first board so the user doesnt do anything funny
+	    	Optional<Task> task = taskRepository.findById(tid);
+	    	BoardTaskJoin btj = btjRepository.findOneByBtjIdentityTaskId(tid);
+	    	if (btj == null || task == null || btj.getBtjIdentity().getBoardId() != fbid) {
+	    		System.out.print("trying to move a task from a board that doesn't belong to the task? or you are trying to move a task that doesn't exist");
+	    		return null;
+	    	}
+
+	    	Integer startTaskPos = task.get().getPosition();
+	    	
 	    	//update position in the second board
-	    	final String query = "UPDATE board_tasks"
+	    	final String query1 = "UPDATE board_tasks"
 	    			+ " SET position = position + 1"
 	    			+ " WHERE EXISTS ("
 	    			+ "	SELECT boards_tasks_join.task_id"
 	    			+ "	FROM boards_tasks_join"
 	    			+ "	WHERE boards_tasks_join.task_id = board_tasks.id"
 	    			+ " AND board_tasks.position >= " + pos
-	    			+ " AND boards_tasks_join.board_id = " + bid + ");";
+	    			+ " AND boards_tasks_join.board_id = " + sbid + ");";
 	    	//changing the board for the task
-	    	final String query1 = "UPDATE boards_tasks_join, board_tasks"
-	    			+ " SET boards_tasks_join.board_id = " + bid + ","
+	    	final String query2 = "UPDATE boards_tasks_join, board_tasks"
+	    			+ " SET boards_tasks_join.board_id = " + sbid + ","
 	    			+ " board_tasks.position = " + pos
 	    			+ " WHERE board_tasks.id = " + tid
 	    			+ " AND boards_tasks_join.task_id = board_tasks.id;";
+	    	//updating the positions in the first board
+	    	final String query3 = "UPDATE board_tasks "
+	    			+ " SET position = position - 1 "
+	    			+ " WHERE EXISTS ("
+	    			+ "	SELECT boards_tasks_join.task_id"
+	    			+ " FROM boards_tasks_join"
+	    			+ " WHERE boards_tasks_join.task_id = board_tasks.id"
+	    			+ " AND boards_tasks_join.board_id = " + fbid
+	    			+ " AND board_tasks.position > " + startTaskPos + ");";
+	    	
 	    	
 	    	ArrayList<String> queries = new ArrayList<>();
-	    	queries.add(query);
 	    	queries.add(query1);
-	    	try {			
+	    	queries.add(query2);
+	    	queries.add(query3);
+	    	
+	    	try {
 		    	QueryConstructor.sendQuery(queries);
 	    	} catch (SQLException e) {
 	        	e.printStackTrace();
-	        	//TODO add a case if it fails to transfer the task to remove both boards to prevent memory leak and corruption
+		    	//TODO add case where the entire column gets removed if something fucks up and you get here
 	        	return null;
 	    	}
-	    	*/
-	    	return ResponseEntity.ok("the method is disabled until a case is added where it checks if the BTJ is in the project, it may not be needed but better be safe than sorry");
+	    	
+    		return new EmptyObj();
 
 	    	//return new EmptyObj();
+	    	//return ResponseEntity.ok("the method is disabled until a case is added where it checks if the BTJ is in the project, it may not be needed but better be safe than sorry");
 	    }
 	    
-	    
+
 }
