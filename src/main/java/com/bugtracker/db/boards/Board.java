@@ -26,6 +26,8 @@ public class Board {
     @GeneratedValue(strategy=GenerationType.IDENTITY)
     @Column(name = "id")
     private Integer id;
+    @Column(name = "project_id")
+    private Integer projectId;
     @Column(name = "position")
     private Integer position;
     @Column(name = "title")
@@ -43,15 +45,19 @@ public class Board {
 		super();
 	}
 	
-	public Board(String title) {
+	public Board(Integer id, Integer projectId, Integer position, String title, Set<Task> tasks) {
 		super();
+		this.id = id;
+		this.projectId = projectId;
+		this.position = position;
 		this.title = title;
+		this.tasks = tasks;
 	}
 
 	public Integer getId() {
 		return id;
 	}
-
+	
 	public Integer getPosition() {
 		return position;
 	}
@@ -62,6 +68,12 @@ public class Board {
 
 	public Set<Task> getTasks() {
 		return tasks;
+	}
+
+	
+
+	public Integer getProjectId() {
+		return projectId;
 	}
 
 	public void setTasks(Set<Task> tasks) {

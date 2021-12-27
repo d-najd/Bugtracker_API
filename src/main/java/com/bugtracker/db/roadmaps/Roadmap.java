@@ -23,6 +23,8 @@ public class Roadmap {
     @GeneratedValue(strategy=GenerationType.IDENTITY)
     @Column(name = "id")
     private Integer id;
+    @Column(name = "project_id")
+    private Integer projectId;
     @Column(name = "title")
     private String title;
     @Column(name = "description")
@@ -38,22 +40,17 @@ public class Roadmap {
 		super();
 	}
 
-	public Roadmap(Integer id, String title, String description, String startDate, String dueDate,
+	public Roadmap(Integer id, Integer projectId, String title, String description, String startDate, String dueDate,
 			String dateCreated) {
 		super();
 		this.id = id;
+		this.projectId = projectId;
 		this.title = title;
 		this.description = description;
 		this.startDate = startDate;
 		this.dueDate = dueDate;
 		this.dateCreated = dateCreated;
 	}
-	
-	public Roadmap(String title) {
-		super();
-		this.title = title;
-	}
-
 	public Integer getId() {
 		return id;
 	}
@@ -62,6 +59,9 @@ public class Roadmap {
 	}
 	public String getDescription() {
 		return description;
+	}
+	public Integer getProjectId() {
+		return projectId;
 	}
 	public String getStartDate() {
 		return startDate;

@@ -3,12 +3,11 @@ package com.bugtracker.db.boards;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import javax.persistence.EntityNotFoundException;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,23 +16,14 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.bugtracker.EmptyObj;
 import com.bugtracker.QueryConstructor;
-import com.bugtracker.db.boards.tasks.Task;
 import com.bugtracker.db.boards.tasks.TaskRepository;
-import com.bugtracker.db.roadmaps.Roadmap;
-import com.bugtracker.project.Project;
 import com.bugtracker.project.ProjectRepository;
-import com.bugtracker.project.boards.ProjectBoards;
-import com.bugtracker.project.boards.ProjectBoardsIdentity;
-import com.bugtracker.project.boards.ProjectBoardsRepository;
-import com.bugtracker.project.roadmaps.ProjectRoadmaps;
-import com.bugtracker.project.roadmaps.ProjectRoadmapsIdentity;
+
 
 @RestController
 @RequestMapping("/boards")
@@ -44,8 +34,6 @@ public class BoardController {
 	@Autowired
 	TaskRepository taskRepository;
 	
- 	@Autowired
-    ProjectBoardsRepository projectBoardsRepository;
  	
 	@Autowired
 	ProjectRepository projectRepository;
@@ -59,14 +47,7 @@ public class BoardController {
 	
 	@GetMapping("/all/{projectId}")
 	public List<Board> getAllBoards(@PathVariable Integer projectId){
-    	List <Integer> boardsIds = new ArrayList<>();
-    	List<ProjectBoards> sBoardsRaw = projectBoardsRepository.
-    			findAllByProjectBoardsIdentityProjectId(projectId);
-    	for (ProjectBoards sBoard : sBoardsRaw) {
-    		boardsIds.add(sBoard.getProjectBoardsIdentity().getBoardId());
-    	}    	
-    	
-        return boardRepository.findAllById(boardsIds);
+        return boardRepository.findAllByProjectId(projectId);
 	}
     
     @ResponseBody
@@ -74,34 +55,18 @@ public class BoardController {
     public Board getBoard(@PathVariable Integer id){
     	return boardRepository.findById(id).get();
     }
-	
-    @PostMapping
-    public ResponseEntity<String> createBoardOld(){
-    	return ResponseEntity.ok("this method has been decapitated, use ip/{projectId} instead");
-
-    }
     
 	@ResponseBody
-	@PostMapping("/{projectId}")
-    public Board createBoard(@RequestBody Board board, @PathVariable Integer projectId){
-    	boolean crash = false;
-    	try {
-    		Project project = projectRepository.getById(projectId);
-    		String title = project.getTitle();
-    	} catch(EntityNotFoundException e){
-    		System.out.print("\n\nWARRNING, some moron is trying to create a board in nonexisting project, why not crash his phone instead?\n\n");
-    		crash = true;
-    	}
-    	
-    	if (crash == true) {
-    		return new Board("can't save a board to nonexisting project, seems dumb don't you think?");
-    	}
-    	
-    	Board newBoard = boardRepository.save(board);
-    	ProjectBoardsIdentity identity = new ProjectBoardsIdentity(projectId, newBoard.getId());
-    	ProjectBoards projectBoard = new ProjectBoards(identity);
-    	projectBoardsRepository.save(projectBoard);
-    	return newBoard;
+	@PostMapping
+    public Board createBoard(@RequestBody Board board){
+		try {
+			Board b = boardRepository.save(board);
+			return b;
+		} catch (DataIntegrityViolationException e){
+			System.out.print("\n\nTrying to save board to nonexistant project\n\n");
+			return null;
+		}
+		
     }
     
     @ResponseBody
@@ -134,7 +99,8 @@ public class BoardController {
         	e.printStackTrace();
         	return ResponseEntity.ok("Server SQL exception");
     	} 
-    	return ResponseEntity.ok("the function for now is diabled until there is added case where it checks if the task is in the selected project and only update the other tasks if it is in that project");
+    	return ResponseEntity.ok("ok");
+    	//return ResponseEntity.ok("the function for now is diabled until there is added case where it checks if the task is in the selected project and only update the other tasks if it is in that project");
     	
     }
     

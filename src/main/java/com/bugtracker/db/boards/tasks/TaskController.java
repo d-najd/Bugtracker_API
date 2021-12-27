@@ -83,7 +83,7 @@ public class TaskController {
 	    		crash = true;
 	    	}
 	    	if (crash == true) 
-	    		return new Board("can't save task to nonexisting board");
+	    		return null;
 	    		
 	        task = taskRepository.save(task);
 	        board.addTask(task);
