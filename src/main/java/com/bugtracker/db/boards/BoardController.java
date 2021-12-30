@@ -33,7 +33,6 @@ public class BoardController {
 	
 	@Autowired
 	TaskRepository taskRepository;
-	
  	
 	@Autowired
 	ProjectRepository projectRepository;

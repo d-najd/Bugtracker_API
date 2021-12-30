@@ -37,16 +37,13 @@ public class RoadmapController {
 	@Autowired
 	ProjectRepository projectRepository;
 
+    @GetMapping("/all")
+    public List<Roadmap> getAllRoadmaps() {
+        return roadmapRepository.findAll();
+    }
+	
     @GetMapping("/all/{projectId}")
     public List<Roadmap> getAllRoadmapsByProjectId(@PathVariable Integer projectId) {
-    	/*
-    	List<ProjectRoadmaps> sRoadmapsRaw = projectRoadmapsRepository.
-    			findAllByProjectRoadmapsIdentityProjectId(projectId);
-    	for (ProjectRoadmaps sRoadmap : sRoadmapsRaw) {
-    		roadmapIds.add(sRoadmap.getProjectRoadmapsIdentity().getRoadmapId());
-    	}    	
-    	*/
-    	
         return roadmapRepository.findAllByProjectId(projectId);
     }
     

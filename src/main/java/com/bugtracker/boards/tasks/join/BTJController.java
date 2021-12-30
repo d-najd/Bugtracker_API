@@ -88,7 +88,7 @@ public class BTJController {
 	    	btjRepository.deleteById(new BtjIdentity(bid, tid));
 	    	taskRepository.deleteById(tid);
 
-	    	return ResponseEntity.ok("the method is disabled until a case is added where it checks if the BTJ is in the project, it may not be needed but better be safe than sorry");
+	    	return ResponseEntity.ok("ok");
 	    }
 	    /**
 	     * swaps task from one board to another
