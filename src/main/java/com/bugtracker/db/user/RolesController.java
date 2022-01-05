@@ -32,7 +32,7 @@ public class RolesController {
 		return roleRepository.findById(username);
 	} 
 
-	@PostMapping("/hello")
+	@PostMapping
 	public void addRole(@RequestBody Roles role) {
 		roleRepository.save(role);
 	}

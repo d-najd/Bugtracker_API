@@ -13,86 +13,36 @@ public class Roles {
     @Id
     @Column(name = "username")
     private String username;
-    @Column(name = "manage_project")
-    private boolean manageProject;
-    @Column(name = "manage_users")
-    private boolean manageUsers;
-    @Column(name = "create")
-    private boolean create;
-    @Column(name = "edit")
-    private boolean edit;
-    @Column(name = "delete")
-    private boolean delete;
-
+    @Column(name = "ROLE_manage_project")
+    private Boolean manageProject;
+    @Column(name = "ROLE_manage_users")
+    private Boolean manageUsers;
+    @Column(name = "ROLE_create")
+    private Boolean create;
+    @Column(name = "ROLE_edit")
+    private Boolean edit;
+    @Column(name = "ROLE_delete")
+    private Boolean delete;
+    
 	public Roles() {
 		super();
 	}
-	
-	public Roles(String userName) {
-		super();
-		this.username = userName;
-	}
-
-	public Roles(String username, boolean manageProject, boolean manageUsers, boolean create, boolean edit,
-			boolean delete) {
-		super();
-		this.username = username;
-		this.manageProject = manageProject;
-		this.manageUsers = manageUsers;
-		this.create = create;
-		this.edit = edit;
-		this.delete = delete;
-	}
-
 	public String getUsername() {
 		return username;
 	}
-
-	public void setUsername(String username) {
-		this.username = username;
-	}
-
-	public boolean isManageProject() {
+	public Boolean getManageProject() {
 		return manageProject;
 	}
-
-	public void setManageProject(boolean manageProject) {
-		this.manageProject = manageProject;
-	}
-
-	public boolean isManageUsers() {
+	public Boolean getManageUsers() {
 		return manageUsers;
 	}
-
-	public void setManageUsers(boolean manageUsers) {
-		this.manageUsers = manageUsers;
-	}
-
-	public boolean isCreate() {
+	public Boolean getCreate() {
 		return create;
 	}
-
-	public void setCreate(boolean create) {
-		this.create = create;
-	}
-
-	public boolean isEdit() {
+	public Boolean getEdit() {
 		return edit;
 	}
-
-	public void setEdit(boolean edit) {
-		this.edit = edit;
-	}
-
-	public boolean isDelete() {
+	public Boolean getDelete() {
 		return delete;
 	}
-
-	public void setDelete(boolean delete) {
-		this.delete = delete;
-	}
-
-	
-	
-    
 }
