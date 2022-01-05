@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.bugtracker.boards.tasks.join.BoardTaskJoin;
+
 @RestController
 @RequestMapping("/users")
 public class UserController {
@@ -33,7 +35,9 @@ public class UserController {
 
 	@PostMapping("/{roles}")
 	public void addUser(@RequestBody User user, @PathVariable String roles) {
-		Roles r = rolesRepository.getById(roles);
+		Roles r = rolesRepository.findOneByUsername("new");
+		
+		System.out.print("\n\n username is " + r.getUsername() + "\n\n");
 		user.setRoles(r);
 		userRepository.save(user);
 	}
