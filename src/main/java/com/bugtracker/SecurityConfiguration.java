@@ -20,6 +20,11 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Autowired
     @Lazy
     UserDetailsService userDetailsService;
+    
+    @Autowired
+    private CustomLogoutSuccessHandler logoutSuccessHandler;    
+    
+    @Autowired
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
@@ -29,19 +34,40 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.httpBasic().and()
-        .authorizeRequests()
-        .antMatchers(HttpMethod.POST ,"/project").permitAll()
-        .antMatchers(HttpMethod.DELETE ,"/**").permitAll()
-        .antMatchers(HttpMethod.PUT ,"/**").permitAll()
-        .antMatchers(HttpMethod.GET ,"/**").permitAll()
-        .antMatchers("/admin").hasRole("ADMIN")
-        .antMatchers("/user").hasAnyRole("ADMIN", "USER")
-        .antMatchers("/").permitAll()
-        .anyRequest().permitAll()
-        .and().formLogin();
-        
-        http.csrf().disable();  // ADD THIS CODE TO DISABLE CSRF IN PROJECT.**
+        http.csrf().disable(); //welp sadly I am forced to disable this
+
+    	
+		//the check if the user is allowed to view the project is inside the project
+        http.httpBasic().and() //needed for postman
+        	.authorizeRequests()
+        		.antMatchers("/**").hasAuthority("ROLE_owner")
+        		.antMatchers(HttpMethod.POST, "/users/**").permitAll()
+        		
+        		.antMatchers(HttpMethod.GET, "/**").authenticated()
+            	.antMatchers(HttpMethod.POST, "/project/**").authenticated()
+            	.antMatchers(HttpMethod.DELETE, "/project/**").hasAuthority("ROLE_manageProject")
+            	.antMatchers(HttpMethod.PUT, "/project/**").hasAuthority("ROLE_manageProject")  
+            	
+            	//NOTE why doesn't exclude url this url exist??
+            	.antMatchers(HttpMethod.POST, "/btj/**").hasAuthority("ROLE_create")
+            	.antMatchers(HttpMethod.POST, "/boards/**").hasAuthority("ROLE_create")
+            	.antMatchers(HttpMethod.POST, "/tasks/**").hasAuthority("ROLE_create")
+            	.antMatchers(HttpMethod.POST, "/roadmaps/**").hasAuthority("ROLE_create")
+            	
+            	.antMatchers(HttpMethod.PUT, "/btj/**").hasAuthority("ROLE_edit")
+            	.antMatchers(HttpMethod.PUT, "/boards/**").hasAuthority("ROLE_edit")
+            	.antMatchers(HttpMethod.PUT, "/tasks/**").hasAuthority("ROLE_edit")
+            	.antMatchers(HttpMethod.PUT, "/roadmaps/**").hasAuthority("ROLE_edit")
+            	
+            	.antMatchers(HttpMethod.DELETE, "/btj/**").hasAuthority("ROLE_delete")
+            	.antMatchers(HttpMethod.DELETE, "/boards/**").hasAuthority("ROLE_delete")
+            	.antMatchers(HttpMethod.DELETE, "/tasks/**").hasAuthority("ROLE_delete")
+            	.antMatchers(HttpMethod.DELETE, "/roadmaps/**").hasAuthority("ROLE_delete")
+            .and()
+            .formLogin().permitAll()
+            .and()
+            .logout().logoutSuccessHandler(logoutSuccessHandler)
+            .permitAll();
     }
 
     @SuppressWarnings("deprecation")

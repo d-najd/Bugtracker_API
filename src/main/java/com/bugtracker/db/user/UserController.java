@@ -1,7 +1,6 @@
 package com.bugtracker.db.user;
 
 import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -11,8 +10,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import com.bugtracker.boards.tasks.join.BoardTaskJoin;
 
 @RestController
 @RequestMapping("/users")
@@ -33,22 +30,20 @@ public class UserController {
 		return userRepository.getById(username);
 	}
 
-	@PostMapping("/{roles}")
-	public void addUser(@RequestBody User user, @PathVariable String roles) {
-		Roles r = rolesRepository.findOneByUsername("new");
+	@PostMapping
+	public User addUser(@RequestBody User user) {
+		if (user.getRoles() == null) {
+			System.out.print("\n\n{ERROR} someone is trying to save user without roles, the username is: " + user.getUsername()+"\n\n");
+			return null;
+		}
 		
-		System.out.print("\n\n username is " + r.getUsername() + "\n\n");
+		Roles r = rolesRepository.findById(user.getUsername()).get();
 		user.setRoles(r);
-		userRepository.save(user);
+		return userRepository.save(user);
 	}
 	
-	@PutMapping("/{username}")
+	@PutMapping
 	public void editUser(@RequestBody User user) {
-		if (user.getRoles() == null)
-		{
-			System.out.print("\n\ntrying to save user without roles, doesn't make much sense does it?\n\n");
-			return;
-		}
 		userRepository.save(user);
 	}
 	

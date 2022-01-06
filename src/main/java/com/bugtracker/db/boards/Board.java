@@ -17,7 +17,6 @@ import javax.persistence.Table;
 
 import com.bugtracker.db.boards.tasks.Task;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.kriscfoster.school.subject.Subject;
 
 @Table(name="boards")
 @Entity

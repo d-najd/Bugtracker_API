@@ -4,6 +4,14 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
+
+import org.apache.tomcat.jni.User;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.persistence.*;
 
 @Entity
@@ -15,7 +23,7 @@ public class User {
     @Column(name = "password")
     private String password;
     @Column(name = "active")
-    private boolean active;
+    private Boolean active;
     
     @ManyToOne
     private Roles roles;
@@ -23,7 +31,7 @@ public class User {
 	public User() {
 		super();
 	}
-	public User(String username, String password, Roles roles, boolean active) {
+	public User(String username, String password, Roles roles, Boolean active) {
 		super();
 		this.username = username;
 		this.password = password;
@@ -36,7 +44,8 @@ public class User {
 	public String getPassword() {
 		return password;
 	}
-	public boolean isActive() {
+	
+	public Boolean getActive() {
 		return active;
 	}
 	public Roles getRoles() {
@@ -44,5 +53,12 @@ public class User {
 	}
 	public void setRoles(Roles roles) {
 		this.roles = roles;
+	}
+	
+	public List<GrantedAuthority> _getAuthorities() {
+		List<GrantedAuthority> authorities = roles._getAuthorities();
+		if (username.equals("admin"))
+			authorities.add(new SimpleGrantedAuthority("ROLE_owner"));
+		return authorities;
 	}
 }
