@@ -1,4 +1,4 @@
-package com.bugtracker.db.user;
+package com.bugtracker.db.roles;
 
 import java.util.List;
 import java.util.Optional;
@@ -28,7 +28,7 @@ public class RolesController {
 	}
 	
 	@GetMapping("/{username}")
-	public Optional<Roles> getRole(@PathVariable String username) {
+	public Optional<Roles> getRolesByUsername(@PathVariable String username) {
 		return roleRepository.findById(username);
 	} 
 
@@ -46,6 +46,4 @@ public class RolesController {
 	public void deleteTopic(@PathVariable String username){
 		roleRepository.deleteById(username);
 	}
-		
-	
 }

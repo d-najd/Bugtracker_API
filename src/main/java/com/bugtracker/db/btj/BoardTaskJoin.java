@@ -1,4 +1,4 @@
-package com.bugtracker.boards.tasks.join;
+package com.bugtracker.db.btj;
 
 
 import javax.persistence.EmbeddedId;

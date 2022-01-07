@@ -21,9 +21,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.bugtracker.boards.tasks.join.BTJRepository;
 import com.bugtracker.db.boards.Board;
 import com.bugtracker.db.boards.BoardRepository;
+import com.bugtracker.db.btj.BTJRepository;
 
 @RestController
 @RequestMapping("/tasks")

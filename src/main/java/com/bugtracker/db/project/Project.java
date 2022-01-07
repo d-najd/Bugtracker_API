@@ -1,4 +1,4 @@
-package com.bugtracker.project;
+package com.bugtracker.db.project;
 
 import java.util.HashSet;
 import java.util.Set;

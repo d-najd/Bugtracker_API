@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.bugtracker.project.ProjectRepository;
+import com.bugtracker.db.project.ProjectRepository;
 
 @RestController
 @RequestMapping("/roadmaps")

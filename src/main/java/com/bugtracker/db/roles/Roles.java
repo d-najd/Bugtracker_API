@@ -1,4 +1,4 @@
-package com.bugtracker.db.user;
+package com.bugtracker.db.roles;
 
 import java.util.ArrayList;
 import java.util.HashMap;

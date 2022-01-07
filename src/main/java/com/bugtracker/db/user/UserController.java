@@ -11,6 +11,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.bugtracker.db.roles.Roles;
+import com.bugtracker.db.roles.RolesRepository;
+
 @RestController
 @RequestMapping("/users")
 public class UserController {
@@ -32,13 +35,8 @@ public class UserController {
 
 	@PostMapping
 	public User addUser(@RequestBody User user) {
-		if (user.getRoles() == null) {
-			System.out.print("\n\n{ERROR} someone is trying to save user without roles, the username is: " + user.getUsername()+"\n\n");
-			return null;
-		}
-		
 		Roles r = rolesRepository.findById(user.getUsername()).get();
-		user.setRoles(r);
+		//user.setRoles(r);
 		return userRepository.save(user);
 	}
 	

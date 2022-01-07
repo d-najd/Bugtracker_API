@@ -1,4 +1,4 @@
-package com.bugtracker.project;
+package com.bugtracker.db.project;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,11 +8,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import com.bugtracker.boards.tasks.join.BTJRepository;
-import com.bugtracker.boards.tasks.join.BoardTaskJoin;
 import com.bugtracker.db.boards.Board;
 import com.bugtracker.db.boards.BoardRepository;
 import com.bugtracker.db.boards.tasks.TaskRepository;
+import com.bugtracker.db.btj.BTJRepository;
+import com.bugtracker.db.btj.BoardTaskJoin;
 import com.bugtracker.db.roadmaps.Roadmap;
 
 @RestController

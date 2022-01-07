@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.bugtracker.EmptyObj;
 import com.bugtracker.QueryConstructor;
 import com.bugtracker.db.boards.tasks.TaskRepository;
-import com.bugtracker.project.ProjectRepository;
+import com.bugtracker.db.project.ProjectRepository;
 
 
 @RestController

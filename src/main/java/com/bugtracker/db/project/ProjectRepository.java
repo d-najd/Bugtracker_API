@@ -1,4 +1,4 @@
-package com.bugtracker.project;
+package com.bugtracker.db.project;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
