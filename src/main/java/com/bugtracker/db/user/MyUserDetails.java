@@ -1,5 +1,6 @@
 package com.bugtracker.db.user;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -11,21 +12,31 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 public class MyUserDetails implements UserDetails {
 
-	private String userName;
+	private String username;
     private String password;
     private boolean active;
     private List<GrantedAuthority> authorities;
 
     public MyUserDetails(User user) {
-        this.userName = user.getUsername();
+        this.username = user.getUsername();
         this.password = user.getPassword();
         this.active = user.getActive();
-        this.authorities = user._getAuthorities();
+        //this.authorities = user._getAuthorities();
+        List<GrantedAuthority> auth = new ArrayList<GrantedAuthority>();
+        
+        if (user.getUsername().equals("admin")) {
+        	auth.add(new SimpleGrantedAuthority("ROLE_owner"));
+        }
+        this.authorities = auth; 
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return authorities;
+    }
+    
+    public void addAuthority(SimpleGrantedAuthority authority) {
+    	authorities.add(authority);
     }
 
     @Override
@@ -35,7 +46,7 @@ public class MyUserDetails implements UserDetails {
 
     @Override
     public String getUsername() {
-        return userName;
+        return username;
     }
 
     @Override

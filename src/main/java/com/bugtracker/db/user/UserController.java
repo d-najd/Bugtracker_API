@@ -35,7 +35,7 @@ public class UserController {
 
 	@PostMapping
 	public User addUser(@RequestBody User user) {
-		Roles r = rolesRepository.findById(user.getUsername()).get();
+		//Roles r = rolesRepository.findById(user.getUsername()).get();
 		//user.setRoles(r);
 		return userRepository.save(user);
 	}
@@ -47,7 +47,8 @@ public class UserController {
 	
 	@DeleteMapping("/{username}")
 	public void deleteUser(@PathVariable String username){
-		userRepository.deleteById(username);
-		rolesRepository.deleteById(username);
+		//DISABLED
+		//userRepository.deleteById(username);
+		//rolesRepository.deleteById(username);
 	}
 }

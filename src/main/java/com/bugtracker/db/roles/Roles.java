@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.persistence.Column;
+import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -15,12 +16,13 @@ import javax.persistence.Table;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
+import com.bugtracker.db.btj.BtjIdentity;
+
 @Entity
 @Table(name = "roles")
 public class Roles {
-    @Id
-    @Column(name = "username")
-    private String username;
+    @EmbeddedId
+    private RolesIdentity rolesIdentity;
     @Column(name = "ROLE_manage_project")
     private Boolean manageProject;
     @Column(name = "ROLE_manage_users")
@@ -35,9 +37,11 @@ public class Roles {
 	public Roles() {
 		super();
 	}
-	public String getUsername() {
-		return username;
+	
+	public RolesIdentity getRolesIdentity() {
+		return rolesIdentity;
 	}
+
 	public Boolean getManageProject() {
 		return manageProject;
 	}

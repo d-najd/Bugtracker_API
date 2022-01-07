@@ -34,7 +34,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-
+    	
 		//the check if the user is allowed to view the project is inside the project
         http.httpBasic().and() //needed for postman
         	.authorizeRequests()
