@@ -39,11 +39,6 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         http.httpBasic().and() //needed for postman
         	.authorizeRequests()
         		//owner NOTE owner is only given to the devs for testing purpuses
-    			.antMatchers("/**").hasAuthority("ROLE_owner")
-            	.antMatchers(HttpMethod.DELETE, "/**").hasAuthority("ROLE_owner")
-            	.antMatchers(HttpMethod.PUT, "/**").hasAuthority("ROLE_owner")
-            	.antMatchers(HttpMethod.POST, "/**").hasAuthority("ROLE_owner")
-    			
             	//everyone is allowed to create new user
     			.antMatchers(HttpMethod.POST, "/users/**").permitAll()
     			
@@ -70,6 +65,11 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
             	.antMatchers(HttpMethod.DELETE, "/boards/**").hasAuthority("ROLE_delete")
             	.antMatchers(HttpMethod.DELETE, "/tasks/**").hasAuthority("ROLE_delete")
             	.antMatchers(HttpMethod.DELETE, "/roadmaps/**").hasAuthority("ROLE_delete") 	
+            	
+    			.antMatchers("/**").hasAuthority("ROLE_owner")
+            	.antMatchers(HttpMethod.DELETE, "/**").hasAuthority("ROLE_owner")
+            	.antMatchers(HttpMethod.PUT, "/**").hasAuthority("ROLE_owner")
+            	.antMatchers(HttpMethod.POST, "/**").hasAuthority("ROLE_owner")
             .and()
             .formLogin().permitAll()
             .and()
