@@ -79,11 +79,11 @@ public class Roles {
 	
 	private Map<String, Boolean> mapAuthorities() {
 		Map<String, Boolean> map = new HashMap<>();
-		map.put("ROLE_manageProject", manageProject);
-		map.put("ROLE_manageUsers", manageUsers);
-		map.put("ROLE_create", create);
-		map.put("ROLE_edit", edit);
-		map.put("ROLE_delete", delete);
+		map.put("manage_project_AUTHORITY", manageProject);
+		map.put("manage_users_AUTHORITY", manageUsers);
+		map.put("create_AUTHORITY", create);
+		map.put("edit_AUTHORITY", edit);
+		map.put("delete_AUTHORITY", delete);
 		return map;
 	}
 }

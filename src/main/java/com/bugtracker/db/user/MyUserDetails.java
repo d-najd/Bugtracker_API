@@ -26,6 +26,9 @@ public class MyUserDetails implements UserDetails {
         
         if (user.getUsername().equals("admin")) {
         	auth.add(new SimpleGrantedAuthority("ROLE_owner"));
+        } else
+        {
+        	auth.add(new SimpleGrantedAuthority("ROLE_user"));
         }
         this.authorities = auth; 
     }

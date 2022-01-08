@@ -26,8 +26,8 @@ public class User {
     @Column(name = "active")
     private Boolean active;
     
-    @ManyToOne
-    private Roles roles;
+    //@ManyToOne
+    //private Roles roles;
 
 	public User() {
 		super();
@@ -49,7 +49,7 @@ public class User {
 		return active;
 	}
 	
-	
+	/*
 	public List<GrantedAuthority> _getAuthorities() {
 		return null;
 		/* TODO fix the logic behind authorities to enable this
@@ -57,7 +57,8 @@ public class User {
 		if (username.equals("admin"))
 			authorities.add(new SimpleGrantedAuthority("ROLE_owner"));
 		return authorities;
-		*/
+		
 	}
+	*/
 	
 }
