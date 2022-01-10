@@ -33,9 +33,32 @@ public class Roles {
     private Boolean edit;
     @Column(name = "ROLE_delete")
     private Boolean delete;
-    
+
 	public Roles() {
 		super();
+	}
+
+	public Roles(RolesIdentity rolesIdentity, Boolean manageProject, Boolean manageUsers, Boolean create, Boolean edit,
+			Boolean delete) {
+		super();
+		this.rolesIdentity = rolesIdentity;
+		this.manageProject = manageProject;
+		this.manageUsers = manageUsers;
+		this.create = create;
+		this.edit = edit;
+		this.delete = delete;
+	}
+
+	public Roles(String username, Integer projectId, Boolean manageProject, Boolean manageUsers, Boolean create, Boolean edit,
+			Boolean delete) {
+		super();
+		RolesIdentity rolesIdentity = new RolesIdentity(username, projectId);
+		this.rolesIdentity = rolesIdentity;
+		this.manageProject = manageProject;
+		this.manageUsers = manageUsers;
+		this.create = create;
+		this.edit = edit;
+		this.delete = delete;
 	}
 	
 	public RolesIdentity getRolesIdentity() {
@@ -71,7 +94,6 @@ public class Roles {
 	    	if (authoritiesMap.get(i))
 	    	{
 	    		authorities.add(new SimpleGrantedAuthority(i));
-		    	System.out.print("has authority " + i + authoritiesMap.get(i) + "\n\n");
 	    	}
 	    }   
 	    return authorities;
@@ -79,11 +101,12 @@ public class Roles {
 	
 	private Map<String, Boolean> mapAuthorities() {
 		Map<String, Boolean> map = new HashMap<>();
-		map.put("manage_project_AUTHORITY", manageProject);
-		map.put("manage_users_AUTHORITY", manageUsers);
-		map.put("create_AUTHORITY", create);
-		map.put("edit_AUTHORITY", edit);
-		map.put("delete_AUTHORITY", delete);
+		
+		map.put(Roles_Global.a_manage_project, manageProject);
+		map.put(Roles_Global.a_manage_users, manageUsers);
+		map.put(Roles_Global.a_create, create);
+		map.put(Roles_Global.a_edit, edit);
+		map.put(Roles_Global.a_delete, delete);
 		return map;
 	}
 }

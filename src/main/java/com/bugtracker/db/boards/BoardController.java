@@ -8,7 +8,9 @@ import javax.persistence.EntityNotFoundException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -23,6 +25,7 @@ import com.bugtracker.EmptyObj;
 import com.bugtracker.QueryConstructor;
 import com.bugtracker.db.boards.tasks.TaskRepository;
 import com.bugtracker.db.project.ProjectRepository;
+import com.bugtracker.db.user.MyUserDetails;
 
 
 @RestController
@@ -37,6 +40,11 @@ public class BoardController {
 	@Autowired
 	ProjectRepository projectRepository;
 	
+	private Boolean checkIfAuthenticated(MyUserDetails userDetails, Integer projectId) {
+		
+		
+		return false;
+	}
 	
 	@GetMapping("/all")
 	public List<Board> getAllBoardsOld() {
@@ -47,6 +55,14 @@ public class BoardController {
 	@GetMapping("/all/{projectId}")
 	public List<Board> getAllBoards(@PathVariable Integer projectId){
         return boardRepository.findAllByProjectId(projectId);
+	}
+	
+	@GetMapping("/all/{projectId}/getByUser")
+	public List<Board> getProjectBoardsByUser(
+			@AuthenticationPrincipal MyUserDetails userDetails,
+			@PathVariable Integer projectId){
+		checkIfAuthenticated(userDetails, projectId);
+		return null;
 	}
     
     @ResponseBody

@@ -10,6 +10,8 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import com.bugtracker.db.roles.Roles_Global;
+
 public class MyUserDetails implements UserDetails {
 
 	private String username;
@@ -25,10 +27,10 @@ public class MyUserDetails implements UserDetails {
         List<GrantedAuthority> auth = new ArrayList<GrantedAuthority>();
         
         if (user.getUsername().equals("admin")) {
-        	auth.add(new SimpleGrantedAuthority("ROLE_owner"));
+        	auth.add(new SimpleGrantedAuthority(Roles_Global.r_owner));
         } else
         {
-        	auth.add(new SimpleGrantedAuthority("ROLE_user"));
+        	auth.add(new SimpleGrantedAuthority(Roles_Global.r_user));
         }
         this.authorities = auth; 
     }
@@ -36,6 +38,24 @@ public class MyUserDetails implements UserDetails {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return authorities;
+    }
+    
+    /**
+     * @apiNote a role is assigned to the user as well
+     * @param auths authorities that you want set to certain user
+     */
+    public void setAuthorities(List<GrantedAuthority> auths) {
+    	authorities.clear();
+    	for (GrantedAuthority authority : auths) {
+    		authorities.add(authority);
+    	}
+    	//add the role
+        if (getUsername().equals("admin")) {
+        	authorities.add(new SimpleGrantedAuthority(Roles_Global.r_owner));
+        } else
+        {
+        	authorities.add(new SimpleGrantedAuthority(Roles_Global.r_user));
+        }
     }
     
     public void addAuthority(SimpleGrantedAuthority authority) {
