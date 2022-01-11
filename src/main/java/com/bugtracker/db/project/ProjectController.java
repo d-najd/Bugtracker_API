@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import javax.persistence.EntityNotFoundException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -90,8 +92,6 @@ public class ProjectController {
 				new SimpleGrantedAuthority(Roles_Global.a_manage_project), rolesRepository))
 			return new ResponseEntity<String>("missing authories for current action", HttpStatus.FORBIDDEN);
 		
-
-		
 		project.setOwnerId(userDetails.getUsername());
 		projectRepository.save(project);
 		return ResponseEntity.ok("ok");
@@ -102,6 +102,12 @@ public class ProjectController {
     		@PathVariable Integer id,
     		@AuthenticationPrincipal MyUserDetails userDetails) {
     	//check if it is the owner of the project trying to remove it since he should be the only one allowed
+    	try {
+    		String owner = projectRepository.getById(id).getOwnerId();
+		} catch (EntityNotFoundException e) {
+    		return new ResponseEntity<String>("trying to get a project that doesn't exist?", HttpStatus.I_AM_A_TEAPOT);
+		}
+    	
     	if (!projectRepository.getById(id).getOwnerId().equals(userDetails.getUsername())) {
     		return new ResponseEntity<String>("You aren't the admin to remove the project", HttpStatus.FORBIDDEN);
     	}

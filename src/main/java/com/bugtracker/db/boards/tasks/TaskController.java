@@ -10,7 +10,10 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -24,6 +27,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.bugtracker.db.boards.Board;
 import com.bugtracker.db.boards.BoardRepository;
 import com.bugtracker.db.btj.BTJRepository;
+import com.bugtracker.db.roles.Roles_Global;
+import com.bugtracker.db.user.MyUserDetails;
 
 @RestController
 @RequestMapping("/tasks")
@@ -33,6 +38,9 @@ public class TaskController {
 	   
 		@Autowired
 		BoardRepository boardRepository;
+		
+	 	@Autowired
+	    BTJRepository btjRepository;
 	 	
 	    @GetMapping("/all")
 	    public List<Task> getAllTasks() {
@@ -43,8 +51,29 @@ public class TaskController {
 	    //userid is authenticated and if he is updating his field id and not the field id of someone else
 	    @ResponseBody
 	    @PutMapping
-	    public Task editTask(@RequestBody Task task){
+	    public Task editTask(
+	    		@AuthenticationPrincipal MyUserDetails userDetails,
+	    		@RequestBody Task task){
+	    	
+	    	//TODO CHECK WHAT HAPPENS IF THE TASK DOESN'T EXIST IN ANY PROJECT
+	    	//AND ADD THE REST OF THE LOGIC
+	    	
+	    	
+	    	Integer boardId = btjRepository.findOneByBtjIdentityTaskId(
+	    			task.getId()).getBtjIdentity().getBoardId();
+	    	
+	    	return null;
+	    	
+	    	/*
+			if (!Roles_Global.hasAuthorities(userDetails, project.getId(),
+					new SimpleGrantedAuthority(Roles_Global.a_manage_project), rolesRepository))
+				return new ResponseEntity<String>("missing authories for current action", HttpStatus.FORBIDDEN);
+	    	
+	    	
+	    	
+	    	
 	    	return taskRepository.save(task);
+	    	*/
 	    }
 	    
 	    @ResponseBody

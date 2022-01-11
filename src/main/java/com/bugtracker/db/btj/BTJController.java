@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.bugtracker.EmptyObj;
 import com.bugtracker.QueryConstructor;
 import com.bugtracker.WebConfiguration;
 import com.bugtracker.db.boards.BoardRepository;
@@ -88,6 +87,12 @@ public class BTJController {
 	     */
 	    
 	    @PutMapping("/startboard/{fbid}/task/{tid}/endboard/{sbid}/newpos/{pos}")
+	    public String swapTaskBoard() {
+	    	return "disabled";
+	    }
+	    
+	    /*
+	    @PutMapping("/startboard/{fbid}/task/{tid}/endboard/{sbid}/newpos/{pos}")
 	    public EmptyObj swapTaskBoard(
 	    		@PathVariable("fbid") Integer fbid,
 	    		@PathVariable("tid") Integer tid,
@@ -150,5 +155,6 @@ public class BTJController {
 	    	//return ResponseEntity.ok("the method is disabled until a case is added where it checks if the BTJ is in the project, it may not be needed but better be safe than sorry");
 	    }
 	    
+	    */
 
 }

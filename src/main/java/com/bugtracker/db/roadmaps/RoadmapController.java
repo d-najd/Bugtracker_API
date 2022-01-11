@@ -1,7 +1,11 @@
 package com.bugtracker.db.roadmaps;
 
+import java.net.http.HttpResponse;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+
+import javax.persistence.EntityNotFoundException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -20,6 +24,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.bugtracker.db.boards.Board;
 import com.bugtracker.db.project.Project;
 import com.bugtracker.db.project.ProjectRepository;
 import com.bugtracker.db.roles.Roles;
@@ -50,25 +55,47 @@ public class RoadmapController {
         return roadmapRepository.findAllByProjectId(projectId);
     }
     
-    @GetMapping("/all/{projectId}/getByUser")
-    public ResponseEntity<List<Roadmap>> getAllRoadmapsByUserAdProjectId(
-    		@AuthenticationPrincipal MyUserDetails userDetails,
-    		@PathVariable Integer projectId) {    	
-    	if (!Roles_Global.hasAuthorities(userDetails, projectId,
-    			(GrantedAuthority) null, rolesRepository))
-    		return new ResponseEntity<List<Roadmap>>(HttpStatus.FORBIDDEN);
-
+    @ResponseBody
+    @GetMapping("/all/getByUser")
+    public ResponseEntity<List<Roadmap>> getAllRoadmapsByUser(
+    		@AuthenticationPrincipal MyUserDetails userDetails) {    
+		//getting all roles including the project ids
+		List<Roles> roles = rolesRepository.findAllByRolesIdentityUsername(userDetails.getUsername());
+		//getting just the project ids
+		List<Integer> ids = new ArrayList<>();
+		for (Roles role : roles) {
+			ids.add(role.getRolesIdentity().getProjectId());
+		}
+		List <Project> projects = projectRepository.findAllByIdIn(ids);
+		ids.clear();
+		for (Project project : projects) {
+			ids.add(project.getId());
+		}
+		
+		//getting the roadmaps
 		return new ResponseEntity<List<Roadmap>>(
-				roadmapRepository.findAllByProjectId(projectId), HttpStatus.OK);
-    }    
+				roadmapRepository.findAllByProjectIdIn(ids), HttpStatus.OK); 
+    } 
     
+    @ResponseBody
+    @GetMapping("/all/{projectId}/getByUser")
+    public ResponseEntity<List<Roadmap>> getAllRoadmapsByProjectIdAndUser(
+    		@AuthenticationPrincipal MyUserDetails userDetails,
+    		@PathVariable Integer projectId) {
+    	if (!Roles_Global.hasAuthorities(userDetails, projectId, 
+    			(GrantedAuthority) null, rolesRepository))
+    		return new ResponseEntity<List<Roadmap>>(HttpStatus.FORBIDDEN) ;
+    	
+    	return new ResponseEntity<List<Roadmap>>(
+    			roadmapRepository.findAllByProjectId(projectId), HttpStatus.OK);
+    }
     
     @ResponseBody
     @PostMapping
     public ResponseEntity<String> addRoadmap(
     		@AuthenticationPrincipal MyUserDetails userDetails,
     		@RequestBody Roadmap roadmap){
-    	
+    	System.out.print("should be later");
     	if (!Roles_Global.hasAuthorities(userDetails, roadmap.getProjectId(), 
     			new SimpleGrantedAuthority(Roles_Global.a_create), rolesRepository))
     		return new ResponseEntity<String>("missing authories for current action", HttpStatus.FORBIDDEN);
@@ -83,7 +110,6 @@ public class RoadmapController {
     public ResponseEntity<String> editRoadmap(
     		@AuthenticationPrincipal MyUserDetails userDetails,
     		@RequestBody Roadmap roadmap){
-		
     	if (!Roles_Global.hasAuthorities(userDetails, roadmap.getProjectId(), 
     			new SimpleGrantedAuthority(Roles_Global.a_edit), rolesRepository))
     		return new ResponseEntity<String>("missing authories for current action", HttpStatus.FORBIDDEN);
@@ -92,14 +118,18 @@ public class RoadmapController {
     	return ResponseEntity.ok("ok");
     }
     
-
-    
     @DeleteMapping("/{id}")
     public ResponseEntity<String> removeRoadmap(
     		@AuthenticationPrincipal MyUserDetails userDetails,
-    		@PathVariable Integer id) {
+    		@PathVariable Integer id) {    	    	
+
+    	try {
+    		Integer roadmap = roadmapRepository.getById(id).getProjectId();
+		} catch (EntityNotFoundException e) {
+    		return new ResponseEntity<String>("trying to get a roadmap that doesn't exist?", HttpStatus.I_AM_A_TEAPOT);
+		}
     	
-    	if (!Roles_Global.hasAuthorities(userDetails, id, 
+    	if (!Roles_Global.hasAuthorities(userDetails, roadmapRepository.getById(id).getProjectId(), 
     			new SimpleGrantedAuthority(Roles_Global.a_delete), rolesRepository))
     		return new ResponseEntity<String>("missing authories for current action", HttpStatus.FORBIDDEN);
     	
@@ -112,6 +142,4 @@ public class RoadmapController {
     public Optional<Roadmap> getRoadmapById(@PathVariable Integer id) {
     	return roadmapRepository.findById(id);
     }
-    
-
 }

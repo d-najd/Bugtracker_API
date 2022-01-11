@@ -58,10 +58,11 @@ public class Roles_Global {
     
     { 
     	Roles roles = rolesRepository.findByRolesIdentity(new RolesIdentity(userDetails.getUsername(), projectId));
-    	if (roles == null)
+    	if (roles == null) {
+    		System.out.print("no roles");
     		return false;
+    	}
     	else {
-
     		userDetails.setAuthorities(roles._getAuthorities());
     		if (authorities == null || authorities.size() == 0)	
     			return true;
@@ -71,6 +72,7 @@ public class Roles_Global {
     				return true;
     		}
     		
+    		System.out.print("authority error");
     		return false;
     	}   
     }

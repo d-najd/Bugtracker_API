@@ -36,6 +36,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
+    	//NOTE ALL OF THE AUTHORITY CHECKING IS DONE INSIDE THE REQUEST METHOD
+    	
     	
 		//the check if the user is allowed to view the project is inside the project
         http.csrf().disable().httpBasic().and() //needed for postman
@@ -44,7 +46,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
             	//everyone is allowed to create new user
         		
         	
-    			.antMatchers(HttpMethod.GET, "/**").hasAuthority(Roles_Global.r_owner)
+				.antMatchers(HttpMethod.GET, "/**").hasAuthority(Roles_Global.r_owner)
     			.antMatchers(HttpMethod.DELETE, "/**").hasAuthority(Roles_Global.r_owner)
     			.antMatchers(HttpMethod.PUT, "/**").hasAuthority(Roles_Global.r_owner)
     			.antMatchers(HttpMethod.POST, "/**").hasAuthority(Roles_Global.r_owner)
@@ -52,48 +54,32 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         	
     			.antMatchers(HttpMethod.POST, "/users/**").permitAll()
     			
-    			//anyone who belongs to the project is allowed to get the project data
-    			.antMatchers(HttpMethod.GET, "/**")
-    				.hasAnyAuthority(Roles_Global.r_user, Roles_Global.r_owner)
-       
+    			//anyone who belongs to the project is allowed to get the project data       
     				
-    			.antMatchers(HttpMethod.GET, "/project/**")
-    				.hasAnyAuthority(Roles_Global.r_user, Roles_Global.r_owner)
-    				
-    				
-                .antMatchers(HttpMethod.POST, "/project/**")
-                	.hasAnyAuthority(Roles_Global.r_user, Roles_Global.r_owner)
-    			.antMatchers(HttpMethod.POST, "/btj/**")
-    				.hasAnyAuthority(Roles_Global.a_create, Roles_Global.r_owner)
-            	.antMatchers(HttpMethod.POST, "/boards/**")
-            		.hasAnyAuthority(Roles_Global.a_create, Roles_Global.r_owner)
-            	.antMatchers(HttpMethod.POST, "/tasks/**")
-            		.hasAnyAuthority(Roles_Global.a_create, Roles_Global.r_owner)
-            	.antMatchers(HttpMethod.POST, "/roadmaps/**")
-            		.hasAnyAuthority(Roles_Global.a_create, Roles_Global.r_owner)
+    			.antMatchers(HttpMethod.GET, "/project/**").authenticated()
+    			.antMatchers(HttpMethod.GET, "/btj/**").authenticated()
+    			.antMatchers(HttpMethod.GET, "/boards/**").authenticated()
+    			.antMatchers(HttpMethod.GET, "/tasks/**").authenticated()
+    			.antMatchers(HttpMethod.GET, "/roadmaps/**").authenticated()
+    			
+                .antMatchers(HttpMethod.POST, "/project/**").authenticated()
+    			.antMatchers(HttpMethod.POST, "/btj/**").authenticated()
+            	.antMatchers(HttpMethod.POST, "/boards/**").authenticated()
+            	.antMatchers(HttpMethod.POST, "/tasks/**").authenticated()
+            	.antMatchers(HttpMethod.POST, "/roadmaps/**").authenticated()
 
 
-                .antMatchers(HttpMethod.PUT, "/project/**")
-                	.hasAnyAuthority(Roles_Global.a_manage_project, Roles_Global.r_owner, Roles_Global.r_user)
-            	.antMatchers(HttpMethod.PUT, "/btj/**")
-            		.hasAnyAuthority(Roles_Global.a_edit, Roles_Global.r_owner)
-            	.antMatchers(HttpMethod.PUT, "/boards/**")
-            		.hasAnyAuthority(Roles_Global.a_edit, Roles_Global.r_owner)
-            	.antMatchers(HttpMethod.PUT, "/tasks/**")
-            		.hasAnyAuthority(Roles_Global.a_edit, Roles_Global.r_owner)
-            	.antMatchers(HttpMethod.PUT, "/roadmaps/**")
-            		.hasAnyAuthority(Roles_Global.a_edit, Roles_Global.r_owner)
+                .antMatchers(HttpMethod.PUT, "/project/**").authenticated()
+            	.antMatchers(HttpMethod.PUT, "/btj/**").authenticated()
+            	.antMatchers(HttpMethod.PUT, "/boards/**").authenticated()
+            	.antMatchers(HttpMethod.PUT, "/tasks/**").authenticated()
+            	.antMatchers(HttpMethod.PUT, "/roadmaps/**").authenticated()
 
-                .antMatchers(HttpMethod.DELETE, "/project/**")
-                	.hasAnyAuthority(Roles_Global.r_user, Roles_Global.r_owner)
-            	.antMatchers(HttpMethod.DELETE, "/btj/**")
-            		.hasAnyAuthority(Roles_Global.a_delete, Roles_Global.r_owner)
-            	.antMatchers(HttpMethod.DELETE, "/boards/**")            	
-            		.hasAnyAuthority(Roles_Global.a_delete, Roles_Global.r_owner)
-            	.antMatchers(HttpMethod.DELETE, "/tasks/**")
-            		.hasAnyAuthority(Roles_Global.a_delete, Roles_Global.r_owner)
-            	.antMatchers(HttpMethod.DELETE, "/roadmaps/**")
-            		.hasAnyAuthority(Roles_Global.a_delete, Roles_Global.r_owner)	
+                .antMatchers(HttpMethod.DELETE, "/project/**").authenticated()
+            	.antMatchers(HttpMethod.DELETE, "/btj/**").authenticated()
+            	.antMatchers(HttpMethod.DELETE, "/boards/**").authenticated()
+            	.antMatchers(HttpMethod.DELETE, "/tasks/**").authenticated()
+            	.antMatchers(HttpMethod.DELETE, "/roadmaps/**").authenticated()
             .and()
             .formLogin().permitAll()
             .and()
