@@ -59,12 +59,12 @@ public class BTJController {
 	     * @return "ok" string response if the request was success null if it failed 
 	     */
 	    
-	    @DeleteMapping("/board/{bid}/task/{tid}")
+	    @DeleteMapping("/boards/{bid}/tasks/{tid}")
 	    public ResponseEntity<String> removeBTJOLD(@PathVariable("bid") Integer bid, @PathVariable("tid") Integer tid){
 	    	return new ResponseEntity<String>("this method is disabled please use /btj/task/{tid}", HttpStatus.BAD_REQUEST); 
 	    }
 	    
-	    @DeleteMapping("/task/{tid}")
+	    @DeleteMapping("/tasks/{tid}")
 	    public ResponseEntity<String> removeBTJ(
 	    		@AuthenticationPrincipal MyUserDetails userDetails,
 	    		@PathVariable("tid") Integer tid) {
@@ -107,13 +107,8 @@ public class BTJController {
 	     * @return empty object if the method failed EmptyObj if it is success
 	     */
 	    
-	    @PutMapping("/startboard/{fbid}/task/{tid}/endboard/{sbid}/newpos/{pos}")
-	    public ResponseEntity<String> swapTaskBoard() {
-	    	return new ResponseEntity<String>("this method is disabled please use /btj/task/{tid}/endboard/{sbid}/newpos/{pos}", HttpStatus.BAD_REQUEST); 
-	    }
 	    
-	    
-	    @PutMapping("/task/{tid}/endboard/{sBid}/newpos/{pos}")
+	    @PutMapping("/tasks/{tid}/endboard/{sBid}/newpos/{pos}")
 	    public ResponseEntity<String> swapTasksBoard(
 	    		@AuthenticationPrincipal MyUserDetails userDetails,
 	    		@PathVariable("tid") Integer tid,

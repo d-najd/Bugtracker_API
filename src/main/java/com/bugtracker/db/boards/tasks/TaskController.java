@@ -53,71 +53,53 @@ public class TaskController {
 	        return taskRepository.findAll();
 	    }
 	    
-	   	@PutMapping
-	    public ResponseEntity<String> editTask(
+	    @DeleteMapping("/{id}")
+	    public ResponseEntity<String> removeTask(
 	    		@AuthenticationPrincipal MyUserDetails userDetails,
-	    		@RequestBody Task task){
-	    	//TODO CHECK WHAT HAPPENS IF THE TASK DOESN'T EXIST IN ANY PROJECT
-	    	//AND ADD THE REST OF THE LOGIC
-	    	
+	    		@PathVariable Integer id) {
 	    	try {
-		    	Integer boardId = btjRepository.findOneByBtjIdentityTaskId(
-		    			task.getId()).getBtjIdentity().getBoardId();
-		    	Integer projectId = boardRepository.findById(boardId).get().getProjectId();
+	    		Integer bid = btjRepository.findOneByBtjIdentityTaskId(
+		    			id).getBtjIdentity().getBoardId();
+		    	Integer projectId = boardRepository.getById(bid).getProjectId();
 		    	
 		    	if (!Roles_Global.hasAuthorities(userDetails, projectId, 
-		    			new SimpleGrantedAuthority(Roles_Global.a_edit), rolesRepository))
+		    			new SimpleGrantedAuthority(Roles_Global.a_delete), rolesRepository))
 		    		return new ResponseEntity<String>("missing authories for current action", HttpStatus.FORBIDDEN);
-	    	} catch (EntityNotFoundException e) {
-	    		return new ResponseEntity<String>("trying to edit a task that doesn't exist?", HttpStatus.I_AM_A_TEAPOT);
-			}
-	    	taskRepository.save(task);
+	    	} catch (EntityNotFoundException | NullPointerException e) {
+	    		return new ResponseEntity<String>("trying to remove task that doesn't exist?", HttpStatus.I_AM_A_TEAPOT);
+	    	}
+	    	
+	    	
+	    	taskRepository.deleteById(id);
 	    	return ResponseEntity.ok("ok");
 	    }
-	    
-	    @PostMapping("/board/{boardId}")
-	    public ResponseEntity<String> createAndSetTaskToBoard(
-	    		@AuthenticationPrincipal MyUserDetails userDetails,
-	    		@RequestBody Task task,
-	            @PathVariable Integer boardId
-	    ) {
-	    	Board board;
-	    	try {
-	    		board = boardRepository.getById(boardId);
-		    	if (!Roles_Global.hasAuthorities(userDetails, board.getProjectId(), 
-		    			new SimpleGrantedAuthority(Roles_Global.a_create), rolesRepository))
-		    		return new ResponseEntity<String>("missing authories for current action", HttpStatus.FORBIDDEN);
-	    	} catch (EntityNotFoundException e) {
-	    		return new ResponseEntity<String>("trying to create a task in board that doens't exist?", HttpStatus.I_AM_A_TEAPOT);
-			}
-	    		
-	        task = taskRepository.save(task);
-	        board.addTask(task);
-	        return ResponseEntity.ok("ok");
-	    }
-	    
-	    
+
 	    @ResponseBody
 	    @GetMapping("/{id}")
 	    public Optional<Task> getTaskById(@PathVariable Integer id) {
 	    	return taskRepository.findById(id);
 	    }
 	    
-	    
-	    @PostMapping
-	    //public Task addTask(@RequestBody Task task)
-	    public String addTask(){
-	    	return ("this function is decapitated, please use /tasks/board/{boardId} \n"
-	    			+ "for creating and setting task to board");
-	    	//return taskRepository.save(task);
+	    @PostMapping("/boards/{bid}")
+	    public ResponseEntity<String> createAndSetTaskToBoard(
+	    		@AuthenticationPrincipal MyUserDetails userDetails,
+	    		@RequestBody Task task,
+	    		@PathVariable Integer bid
+	    ) {
+	    	Board board;
+	    	try {
+	    		board = boardRepository.getById(bid);
+	    		
+		    	if (!Roles_Global.hasAuthorities(userDetails, board.getProjectId(), 
+		    			new SimpleGrantedAuthority(Roles_Global.a_create), rolesRepository))
+		    		return new ResponseEntity<String>("missing authories for current action", HttpStatus.FORBIDDEN);
+	    	} catch (EntityNotFoundException | NullPointerException e) {
+	    		return new ResponseEntity<String>("trying to create task in nonexistant board?", HttpStatus.I_AM_A_TEAPOT);
+	    	}
+	    	
+	        task = taskRepository.save(task);
+	        board.addTask(task);
+	        boardRepository.save(board);
+	        return ResponseEntity.ok("ok");
 	    }
-	    
-	    @DeleteMapping("/{id}")
-	    public String removeTask(@PathVariable Integer id) {
-	    	return ("this function is decapitated, please use /tasks/board/{boardId} \n"
-	    			+ "for creating and setting task to board");
-	    }
-	    
-	    
-	    
 }
