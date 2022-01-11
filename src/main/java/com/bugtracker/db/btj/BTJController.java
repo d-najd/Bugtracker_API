@@ -5,8 +5,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import javax.persistence.EntityNotFoundException;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -19,6 +24,9 @@ import com.bugtracker.WebConfiguration;
 import com.bugtracker.db.boards.BoardRepository;
 import com.bugtracker.db.boards.tasks.Task;
 import com.bugtracker.db.boards.tasks.TaskRepository;
+import com.bugtracker.db.roles.RolesRepository;
+import com.bugtracker.db.roles.Roles_Global;
+import com.bugtracker.db.user.MyUserDetails;
 
 @RestController
 @RequestMapping("/btj")
@@ -35,31 +43,43 @@ public class BTJController {
 		
 		@Autowired
 		BoardRepository boardRepository;
+		
+		@Autowired
+		RolesRepository rolesRepository;
 	 	
 	    @GetMapping("/all")
 	    public List<BoardTaskJoin> getAllBTJ(){
 	    	return btjRepository.findAll();
 	    }
-	    /*
-	    @GetMapping()
-	    public Optional<BoardTaskJoin> getBTJ() {
-	    	return BTJRepository.findById(new BTJIdentity(24, 6));
-	    }
-	    */
-	    
+	        
 	    /**
 	     * removes task from the BTJ (the link between board and task) and from the tasks table
 	     * @param bid id of the board where the task is located
 	     * @param tid id of the task
 	     * @return "ok" string response if the request was success null if it failed 
 	     */
-	   
-	    //TODO add a case where if the task isn't in any other project
-	    //to be removed from the server
+	    
 	    @DeleteMapping("/board/{bid}/task/{tid}")
+	    public ResponseEntity<String> removeBTJOLD(@PathVariable("bid") Integer bid, @PathVariable("tid") Integer tid){
+	    	return new ResponseEntity<String>("this method is disabled please use /btj/task/{tid}", HttpStatus.BAD_REQUEST); 
+	    }
+	    
+	    @DeleteMapping("/task/{tid}")
 	    public ResponseEntity<String> removeBTJ(
-	    		@PathVariable("bid") Integer bid,
+	    		@AuthenticationPrincipal MyUserDetails userDetails,
 	    		@PathVariable("tid") Integer tid) {
+	    	Integer bid;
+	    	try {
+	    		bid = btjRepository.findOneByBtjIdentityTaskId(
+		    			tid).getBtjIdentity().getBoardId();
+		    	Integer projectId = boardRepository.findById(bid).get().getProjectId();
+		    	
+		    	if (!Roles_Global.hasAuthorities(userDetails, projectId, 
+		    			new SimpleGrantedAuthority(Roles_Global.a_delete), rolesRepository))
+		    		return new ResponseEntity<String>("missing authories for current action", HttpStatus.FORBIDDEN);
+	    	} catch (EntityNotFoundException | NullPointerException e) {
+	    		return new ResponseEntity<String>("trying to edit a task that doesn't exist?", HttpStatus.I_AM_A_TEAPOT);
+			}	    	
 	    	final String query = "UPDATE board_tasks SET position = position - 1 WHERE EXISTS ("
 	    			+ "	SELECT boards_tasks_join.task_id"
 	    			+ "	FROM boards_tasks_join"
@@ -70,14 +90,15 @@ public class BTJController {
 		    	QueryConstructor.sendQuery(query);
 	    	} catch (SQLException e) {
 	        	e.printStackTrace();
-		    	//TODO add case where the entire column gets removed if something fucks up and you get here
-	        	return null;
+	        	return new ResponseEntity<String>("Something went wrong while trying to remove a task, a memory leak is probably caused, the task in question was: " + tid, HttpStatus.INTERNAL_SERVER_ERROR);
 	    	}
 	    	btjRepository.deleteById(new BtjIdentity(bid, tid));
 	    	taskRepository.deleteById(tid);
 
 	    	return ResponseEntity.ok("ok");
+	    	
 	    }
+	    
 	    /**
 	     * swaps task from one board to another
 	     * @param tid id of the task which needs to be swapped
@@ -87,28 +108,37 @@ public class BTJController {
 	     */
 	    
 	    @PutMapping("/startboard/{fbid}/task/{tid}/endboard/{sbid}/newpos/{pos}")
-	    public String swapTaskBoard() {
-	    	return "disabled";
+	    public ResponseEntity<String> swapTaskBoard() {
+	    	return new ResponseEntity<String>("this method is disabled please use /btj/task/{tid}/endboard/{sbid}/newpos/{pos}", HttpStatus.BAD_REQUEST); 
 	    }
 	    
-	    /*
-	    @PutMapping("/startboard/{fbid}/task/{tid}/endboard/{sbid}/newpos/{pos}")
-	    public EmptyObj swapTaskBoard(
-	    		@PathVariable("fbid") Integer fbid,
+	    
+	    @PutMapping("/task/{tid}/endboard/{sBid}/newpos/{pos}")
+	    public ResponseEntity<String> swapTasksBoard(
+	    		@AuthenticationPrincipal MyUserDetails userDetails,
 	    		@PathVariable("tid") Integer tid,
-	    		@PathVariable("sbid") Integer sbid,
+	    		@PathVariable("sBid") Integer sBid,
 	    		@PathVariable("pos") Integer pos
 	    		){
 	    	
-	    	//checking if the first task belongs to the first board so the user doesnt do anything funny
-	    	Optional<Task> task = taskRepository.findById(tid);
-	    	BoardTaskJoin btj = btjRepository.findOneByBtjIdentityTaskId(tid);
-	    	if (btj == null || task == null || btj.getBtjIdentity().getBoardId() != fbid) {
-	    		System.out.print("trying to move a task from a board that doesn't belong to the task? or you are trying to move a task that doesn't exist");
-	    		return null;
+	    	Integer fBid;
+	    	try {
+	    		fBid = btjRepository.findOneByBtjIdentityTaskId(
+		    			tid).getBtjIdentity().getBoardId();
+		    	Integer projectId = boardRepository.getById(fBid).getProjectId();
+		    	Integer projectId1 = boardRepository.getById(sBid).getProjectId();
+		    	
+		    	if (!projectId.equals(projectId1))
+		    		return new ResponseEntity<String>("Can't swap boards between projects", HttpStatus.BAD_REQUEST);
+		    	
+		    	if (!Roles_Global.hasAuthorities(userDetails, projectId, 
+		    			new SimpleGrantedAuthority(Roles_Global.a_edit), rolesRepository))
+		    		return new ResponseEntity<String>("missing authories for current action", HttpStatus.FORBIDDEN);
+	    	} catch (EntityNotFoundException | NullPointerException e) {
+	    		return new ResponseEntity<String>("trying to edit a task that doesn't exist?", HttpStatus.I_AM_A_TEAPOT);
 	    	}
-
-	    	Integer startTaskPos = task.get().getPosition();
+	    	
+	    	Integer startTaskPos = taskRepository.getById(tid).getPosition();
 	    	
 	    	//update position in the second board
 	    	final String query1 = "UPDATE board_tasks"
@@ -118,10 +148,10 @@ public class BTJController {
 	    			+ "	FROM boards_tasks_join"
 	    			+ "	WHERE boards_tasks_join.task_id = board_tasks.id"
 	    			+ " AND board_tasks.position >= " + pos
-	    			+ " AND boards_tasks_join.board_id = " + sbid + ");";
+	    			+ " AND boards_tasks_join.board_id = " + sBid + ");";
 	    	//changing the board for the task
 	    	final String query2 = "UPDATE boards_tasks_join, board_tasks"
-	    			+ " SET boards_tasks_join.board_id = " + sbid + ","
+	    			+ " SET boards_tasks_join.board_id = " + sBid + ","
 	    			+ " board_tasks.position = " + pos
 	    			+ " WHERE board_tasks.id = " + tid
 	    			+ " AND boards_tasks_join.task_id = board_tasks.id;";
@@ -132,29 +162,19 @@ public class BTJController {
 	    			+ "	SELECT boards_tasks_join.task_id"
 	    			+ " FROM boards_tasks_join"
 	    			+ " WHERE boards_tasks_join.task_id = board_tasks.id"
-	    			+ " AND boards_tasks_join.board_id = " + fbid
+	    			+ " AND boards_tasks_join.board_id = " + fBid
 	    			+ " AND board_tasks.position > " + startTaskPos + ");";
-	    	
 	    	
 	    	ArrayList<String> queries = new ArrayList<>();
 	    	queries.add(query1);
 	    	queries.add(query2);
 	    	queries.add(query3);
-	    	
 	    	try {
 		    	QueryConstructor.sendQuery(queries);
 	    	} catch (SQLException e) {
 	        	e.printStackTrace();
-		    	//TODO add case where the entire column gets removed if something fucks up and you get here
-	        	return null;
+	        	return new ResponseEntity<String>("Something went wrong while trying to swap tasks, a memory leak is probably caused, the task in question was: " + tid + " end board: " + sBid + " new position: " + pos, HttpStatus.INTERNAL_SERVER_ERROR);
 	    	}
-	    	
-    		return new EmptyObj();
-
-	    	//return new EmptyObj();
-	    	//return ResponseEntity.ok("the method is disabled until a case is added where it checks if the BTJ is in the project, it may not be needed but better be safe than sorry");
+	    	return ResponseEntity.ok("ok");
 	    }
-	    
-	    */
-
 }

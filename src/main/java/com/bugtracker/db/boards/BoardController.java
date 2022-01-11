@@ -97,15 +97,15 @@ public class BoardController {
     		@PathVariable Integer id) {
     	
     	try {
-    		Integer board = boardRepository.getById(id).getProjectId();
+    		Integer projectId = boardRepository.getById(id).getProjectId();
+    		
+        	if (!Roles_Global.hasAuthorities(userDetails, projectId, 
+        			new SimpleGrantedAuthority(Roles_Global.a_delete), rolesRepository))
+        		return new ResponseEntity<String>("missing authories for current action", HttpStatus.FORBIDDEN);
 		} catch (EntityNotFoundException e) {
     		return new ResponseEntity<String>("trying to get a board that doesn't exist?", HttpStatus.I_AM_A_TEAPOT);
 		}
-    	
-    	if (!Roles_Global.hasAuthorities(userDetails, boardRepository.getById(id).getProjectId(), 
-    			new SimpleGrantedAuthority(Roles_Global.a_delete), rolesRepository))
-    		return new ResponseEntity<String>("missing authories for current action", HttpStatus.FORBIDDEN);
-    	
+
     	try {
     		//set the other boards in the correct position
 	    	final String query = "UPDATE boards SET position = position - 1"
@@ -127,9 +127,7 @@ public class BoardController {
         	e.printStackTrace();
     		return new ResponseEntity<String>("SERVER ERROR", HttpStatus.INTERNAL_SERVER_ERROR);
     	} 
-    	return ResponseEntity.ok("ok");
-    	//return ResponseEntity.ok("the function for now is diabled until there is added case where it checks if the task is in the selected project and only update the other tasks if it is in that project");
-    	
+    	return ResponseEntity.ok("ok");    	
     }
     
     @PutMapping("/swap/first/{fId}/second/{sId}")
@@ -139,17 +137,17 @@ public class BoardController {
     		@PathVariable("sId") Integer sId) {
     	
     	try {
-    		Integer board = boardRepository.getById(fId).getProjectId();
-    		Integer board1 = boardRepository.getById(sId).getProjectId();
-    		if (!board.equals(board1))
+    		Integer projectId = boardRepository.getById(fId).getProjectId();
+    		Integer projectId1 = boardRepository.getById(sId).getProjectId();
+    		if (!projectId.equals(projectId1))
     			return new ResponseEntity<String>("trying to swap boards between projects?", HttpStatus.BAD_REQUEST);
-		} catch (EntityNotFoundException e) {
+		
+        	if (!Roles_Global.hasAuthorities(userDetails, projectId, 
+        			new SimpleGrantedAuthority(Roles_Global.a_edit), rolesRepository))
+        		return new ResponseEntity<String>("missing authories for current action", HttpStatus.FORBIDDEN);
+    	} catch (EntityNotFoundException e) {
     		return new ResponseEntity<String>("trying to get a swap boards that don't exist?", HttpStatus.I_AM_A_TEAPOT);
 		}
-    	
-    	if (!Roles_Global.hasAuthorities(userDetails, boardRepository.getById(fId).getProjectId(), 
-    			new SimpleGrantedAuthority(Roles_Global.a_edit), rolesRepository))
-    		return new ResponseEntity<String>("missing authories for current action", HttpStatus.FORBIDDEN);
     	
     	try {
     		ArrayList<String> queries = new ArrayList<>();

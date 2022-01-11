@@ -60,18 +60,17 @@ public class ProjectController {
 	public ResponseEntity<List<Project>> getAllProjectsByUser(
 			@AuthenticationPrincipal MyUserDetails userDetails){
 		//getting all roles including the project ids
+		
 		List<Roles> roles = rolesRepository.findAllByRolesIdentityUsername(userDetails.getUsername());
 		//getting just the project ids
 		List<Integer> ids = new ArrayList<>();
 		for (Roles role : roles) {
 			ids.add(role.getRolesIdentity().getProjectId());
 		}
-		
 		return new ResponseEntity<List<Project>>(
 				projectRepository.findAllByIdIn(ids), HttpStatus.OK);
 	}
 	
-	@ResponseBody
 	@PostMapping
 	public ResponseEntity<String> createProject(
 			@RequestBody Project project,
@@ -83,7 +82,6 @@ public class ProjectController {
 		return ResponseEntity.ok("ok");
 	}
 	
-	@ResponseBody
 	@PutMapping
 	public ResponseEntity<String> editProject(
 			@RequestBody Project project,
@@ -104,14 +102,13 @@ public class ProjectController {
     	//check if it is the owner of the project trying to remove it since he should be the only one allowed
     	try {
     		String owner = projectRepository.getById(id).getOwnerId();
+    		
+        	if (!owner.equals(userDetails.getUsername())) 
+        		return new ResponseEntity<String>("You aren't the admin to remove the project", HttpStatus.FORBIDDEN);
 		} catch (EntityNotFoundException e) {
     		return new ResponseEntity<String>("trying to get a project that doesn't exist?", HttpStatus.I_AM_A_TEAPOT);
 		}
-    	
-    	if (!projectRepository.getById(id).getOwnerId().equals(userDetails.getUsername())) {
-    		return new ResponseEntity<String>("You aren't the admin to remove the project", HttpStatus.FORBIDDEN);
-    	}
-    	
+    		
     	//removing the tasks from the project to prevent a memory leak, since they are not removed with the project when removing it
     	List<Board> boards = boardRepository.findAllByProjectId(id);
     	for (Board board : boards) {

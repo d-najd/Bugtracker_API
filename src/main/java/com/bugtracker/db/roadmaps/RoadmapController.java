@@ -90,12 +90,10 @@ public class RoadmapController {
     			roadmapRepository.findAllByProjectId(projectId), HttpStatus.OK);
     }
     
-    @ResponseBody
     @PostMapping
     public ResponseEntity<String> addRoadmap(
     		@AuthenticationPrincipal MyUserDetails userDetails,
     		@RequestBody Roadmap roadmap){
-    	System.out.print("should be later");
     	if (!Roles_Global.hasAuthorities(userDetails, roadmap.getProjectId(), 
     			new SimpleGrantedAuthority(Roles_Global.a_create), rolesRepository))
     		return new ResponseEntity<String>("missing authories for current action", HttpStatus.FORBIDDEN);
@@ -105,7 +103,6 @@ public class RoadmapController {
     }
     
     
-	@ResponseBody
     @PutMapping
     public ResponseEntity<String> editRoadmap(
     		@AuthenticationPrincipal MyUserDetails userDetails,
@@ -124,14 +121,15 @@ public class RoadmapController {
     		@PathVariable Integer id) {    	    	
 
     	try {
-    		Integer roadmap = roadmapRepository.getById(id).getProjectId();
+    		Integer projectId = roadmapRepository.getById(id).getProjectId();
+    		
+        	if (!Roles_Global.hasAuthorities(userDetails, projectId, 
+        			new SimpleGrantedAuthority(Roles_Global.a_delete), rolesRepository))
+        		return new ResponseEntity<String>("missing authories for current action", HttpStatus.FORBIDDEN);
 		} catch (EntityNotFoundException e) {
     		return new ResponseEntity<String>("trying to get a roadmap that doesn't exist?", HttpStatus.I_AM_A_TEAPOT);
 		}
-    	
-    	if (!Roles_Global.hasAuthorities(userDetails, roadmapRepository.getById(id).getProjectId(), 
-    			new SimpleGrantedAuthority(Roles_Global.a_delete), rolesRepository))
-    		return new ResponseEntity<String>("missing authories for current action", HttpStatus.FORBIDDEN);
+    
     	
     	roadmapRepository.deleteById(id);
     	return ResponseEntity.ok("ok");
