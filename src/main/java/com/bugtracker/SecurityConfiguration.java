@@ -45,12 +45,9 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         	.authorizeRequests()
         		//owner NOTE owner is only given to the devs for testing purpuses
             	//everyone is allowed to create new user        	
-				.antMatchers(HttpMethod.GET, "/**").hasAuthority(Roles_Global.r_owner)
-    			.antMatchers(HttpMethod.DELETE, "/**").hasAuthority(Roles_Global.r_owner)
-    			.antMatchers(HttpMethod.PUT, "/**").hasAuthority(Roles_Global.r_owner)
-    			.antMatchers(HttpMethod.POST, "/**").hasAuthority(Roles_Global.r_owner)
         	
-    			.antMatchers(HttpMethod.POST, "/users/**").permitAll()
+				.antMatchers(HttpMethod.POST, "/users").permitAll()
+				.antMatchers(HttpMethod.GET, "/users").authenticated()
     			
     			//anyone who belongs to the project is allowed to get the project data       
     				
@@ -66,7 +63,6 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
             	.antMatchers(HttpMethod.POST, "/tasks/**").authenticated()
             	.antMatchers(HttpMethod.POST, "/roadmaps/**").authenticated()
 
-
                 .antMatchers(HttpMethod.PUT, "/project/**").authenticated()
             	.antMatchers(HttpMethod.PUT, "/btj/**").authenticated()
             	.antMatchers(HttpMethod.PUT, "/boards/**").authenticated()
@@ -78,6 +74,11 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
             	.antMatchers(HttpMethod.DELETE, "/boards/**").authenticated()
             	.antMatchers(HttpMethod.DELETE, "/tasks/**").authenticated()
             	.antMatchers(HttpMethod.DELETE, "/roadmaps/**").authenticated()
+            	
+				.antMatchers(HttpMethod.GET, "/**").hasAuthority(Roles_Global.r_owner)
+    			.antMatchers(HttpMethod.DELETE, "/**").hasAuthority(Roles_Global.r_owner)
+    			.antMatchers(HttpMethod.PUT, "/**").hasAuthority(Roles_Global.r_owner)
+    			.antMatchers(HttpMethod.POST, "/**").hasAuthority(Roles_Global.r_owner)
             .and()
             .formLogin().permitAll()
             .and()
