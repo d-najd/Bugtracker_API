@@ -49,6 +49,10 @@ public class User {
 		return active;
 	}
 	
+	public void setActive(Boolean active) {
+		this.active = active;
+	}
+	
 	/*
 	public List<GrantedAuthority> _getAuthorities() {
 		return null;

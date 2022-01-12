@@ -10,6 +10,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
@@ -43,14 +44,11 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         http.csrf().disable().httpBasic().and() //needed for postman
         	.authorizeRequests()
         		//owner NOTE owner is only given to the devs for testing purpuses
-            	//everyone is allowed to create new user
-        		
-        	
+            	//everyone is allowed to create new user        	
 				.antMatchers(HttpMethod.GET, "/**").hasAuthority(Roles_Global.r_owner)
     			.antMatchers(HttpMethod.DELETE, "/**").hasAuthority(Roles_Global.r_owner)
     			.antMatchers(HttpMethod.PUT, "/**").hasAuthority(Roles_Global.r_owner)
     			.antMatchers(HttpMethod.POST, "/**").hasAuthority(Roles_Global.r_owner)
-        	
         	
     			.antMatchers(HttpMethod.POST, "/users/**").permitAll()
     			
@@ -92,7 +90,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @SuppressWarnings("deprecation")
 	@Bean
-    public PasswordEncoder getPasswordEncoder() {
+    public PasswordEncoder getPasswordEncoder()
+    {
         return NoOpPasswordEncoder.getInstance();
     }
 }
