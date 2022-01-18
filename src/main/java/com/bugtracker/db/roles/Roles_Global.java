@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.NonNull;
 import org.springframework.security.core.GrantedAuthority;
 
+import com.bugtracker.db.project.Project;
+import com.bugtracker.db.project.ProjectRepository;
 import com.bugtracker.db.user.MyUserDetails;
 
 public class Roles_Global {
@@ -31,19 +33,34 @@ public class Roles_Global {
     		@NonNull MyUserDetails userDetails,
     		@NonNull Integer projectId,
     		GrantedAuthority authority,
-    		RolesRepository rolesRepository)
+    		@NonNull RolesRepository rolesRepository,
+    		@NonNull ProjectRepository projectRepository)
     {
-
     	List<GrantedAuthority> authorities = new ArrayList<>();
     	if (authority != null)
     		authorities.add(authority);
-    	if (hasAuthorities(userDetails, projectId, authorities, rolesRepository))
+    	if (hasAuthorities(userDetails, projectId, authorities, rolesRepository, projectRepository))
     		return true;
     	else {
 			return false;
 		}
     }
     
+    
+    public static Boolean isOwner(
+    		@NonNull MyUserDetails userDetails,
+    		@NonNull Integer projectId,
+    		@NonNull ProjectRepository projectRepository) {
+    	Project project = projectRepository.findByProjectId(projectId);
+    	if (project == null) {
+    		return false;
+    	}
+    	else if (project.getOwnerId().equals(userDetails.getUsername())) {
+    		return true;
+    	}
+    	return false;
+    }
+
 	/**
 	 * @apiNote checks if the user has authorities to access an url
 	 * @param userDetails the user details
@@ -54,14 +71,17 @@ public class Roles_Global {
     public static Boolean hasAuthorities(@NonNull MyUserDetails userDetails,
     									@NonNull Integer projectId,
     									List<GrantedAuthority> authorities,
-    									RolesRepository rolesRepository)
+    									@NonNull RolesRepository rolesRepository,
+    									@NonNull ProjectRepository projectRepository)
     
     { 
+    	if (isOwner(userDetails, projectId, projectRepository))
+    		return true;
+    	
     	Roles roles = rolesRepository.findByRolesIdentity(new RolesIdentity(userDetails.getUsername(), projectId));
     	if (roles == null) {
-    		System.out.print("no roles");
     		return false;
-    	}
+    	} 
     	else {
     		userDetails.setAuthorities(roles._getAuthorities());
     		if (authorities == null || authorities.size() == 0)	

@@ -57,7 +57,7 @@ public class BoardController {
 			@AuthenticationPrincipal MyUserDetails userDetails,
 			@PathVariable Integer projectId){
     	if (!Roles_Global.hasAuthorities(userDetails, projectId, 
-    			(GrantedAuthority) null, rolesRepository))
+    			(GrantedAuthority) null, rolesRepository, projectRepository))
     		return new ResponseEntity<List<Board>>(HttpStatus.FORBIDDEN);
     	
     	return new ResponseEntity<List<Board>>(
@@ -70,7 +70,7 @@ public class BoardController {
     		@AuthenticationPrincipal MyUserDetails userDetails,
     		@RequestBody Board board){
     	if (!Roles_Global.hasAuthorities(userDetails, board.getProjectId(), 
-    			new SimpleGrantedAuthority(Roles_Global.a_create), rolesRepository))
+    			new SimpleGrantedAuthority(Roles_Global.a_create), rolesRepository, projectRepository))
     		return new ResponseEntity<String>("missing authories for current action", HttpStatus.FORBIDDEN);
 		
     	boardRepository.save(board);
@@ -84,7 +84,7 @@ public class BoardController {
     		@RequestBody Board board){
     	
     	if (!Roles_Global.hasAuthorities(userDetails, board.getProjectId(), 
-    			new SimpleGrantedAuthority(Roles_Global.a_edit), rolesRepository))
+    			new SimpleGrantedAuthority(Roles_Global.a_edit), rolesRepository, projectRepository))
     		return new ResponseEntity<String>("missing authories for current action", HttpStatus.FORBIDDEN);
 		
     	boardRepository.save(board);
@@ -100,7 +100,7 @@ public class BoardController {
     		Integer projectId = boardRepository.getById(id).getProjectId();
     		
         	if (!Roles_Global.hasAuthorities(userDetails, projectId, 
-        			new SimpleGrantedAuthority(Roles_Global.a_delete), rolesRepository))
+        			new SimpleGrantedAuthority(Roles_Global.a_delete), rolesRepository, projectRepository))
         		return new ResponseEntity<String>("missing authories for current action", HttpStatus.FORBIDDEN);
 		} catch (EntityNotFoundException e) {
     		return new ResponseEntity<String>("trying to get a board that doesn't exist?", HttpStatus.I_AM_A_TEAPOT);
@@ -143,7 +143,7 @@ public class BoardController {
     			return new ResponseEntity<String>("trying to swap boards between projects?", HttpStatus.BAD_REQUEST);
 		
         	if (!Roles_Global.hasAuthorities(userDetails, projectId, 
-        			new SimpleGrantedAuthority(Roles_Global.a_edit), rolesRepository))
+        			new SimpleGrantedAuthority(Roles_Global.a_edit), rolesRepository, projectRepository))
         		return new ResponseEntity<String>("missing authories for current action", HttpStatus.FORBIDDEN);
     	} catch (EntityNotFoundException e) {
     		return new ResponseEntity<String>("trying to get a swap boards that don't exist?", HttpStatus.I_AM_A_TEAPOT);

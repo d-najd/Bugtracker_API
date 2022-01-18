@@ -29,6 +29,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.bugtracker.db.boards.Board;
 import com.bugtracker.db.boards.BoardRepository;
 import com.bugtracker.db.btj.BTJRepository;
+import com.bugtracker.db.project.ProjectRepository;
 import com.bugtracker.db.roles.RolesRepository;
 import com.bugtracker.db.roles.Roles_Global;
 import com.bugtracker.db.user.MyUserDetails;
@@ -47,6 +48,9 @@ public class TaskController {
 	 	
 		@Autowired
 		RolesRepository rolesRepository;
+		
+		@Autowired
+		ProjectRepository projectRepository;
 	 	
 	    @GetMapping("/all")
 	    public List<Task> getAllTasks() {
@@ -63,7 +67,7 @@ public class TaskController {
 		    	Integer projectId = boardRepository.getById(bid).getProjectId();
 		    	
 		    	if (!Roles_Global.hasAuthorities(userDetails, projectId, 
-		    			new SimpleGrantedAuthority(Roles_Global.a_delete), rolesRepository))
+		    			new SimpleGrantedAuthority(Roles_Global.a_delete), rolesRepository, projectRepository))
 		    		return new ResponseEntity<String>("missing authories for current action", HttpStatus.FORBIDDEN);
 	    	} catch (EntityNotFoundException | NullPointerException e) {
 	    		return new ResponseEntity<String>("trying to remove task that doesn't exist?", HttpStatus.I_AM_A_TEAPOT);
@@ -91,7 +95,7 @@ public class TaskController {
 	    		board = boardRepository.getById(bid);
 	    		
 		    	if (!Roles_Global.hasAuthorities(userDetails, board.getProjectId(), 
-		    			new SimpleGrantedAuthority(Roles_Global.a_create), rolesRepository))
+		    			new SimpleGrantedAuthority(Roles_Global.a_create), rolesRepository, projectRepository))
 		    		return new ResponseEntity<String>("missing authories for current action", HttpStatus.FORBIDDEN);
 	    	} catch (EntityNotFoundException | NullPointerException e) {
 	    		return new ResponseEntity<String>("trying to create task in nonexistant board?", HttpStatus.I_AM_A_TEAPOT);

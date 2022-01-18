@@ -83,7 +83,7 @@ public class RoadmapController {
     		@AuthenticationPrincipal MyUserDetails userDetails,
     		@PathVariable Integer projectId) {
     	if (!Roles_Global.hasAuthorities(userDetails, projectId, 
-    			(GrantedAuthority) null, rolesRepository))
+    			(GrantedAuthority) null, rolesRepository, projectRepository))
     		return new ResponseEntity<List<Roadmap>>(HttpStatus.FORBIDDEN) ;
     	
     	return new ResponseEntity<List<Roadmap>>(
@@ -95,7 +95,7 @@ public class RoadmapController {
     		@AuthenticationPrincipal MyUserDetails userDetails,
     		@RequestBody Roadmap roadmap){
     	if (!Roles_Global.hasAuthorities(userDetails, roadmap.getProjectId(), 
-    			new SimpleGrantedAuthority(Roles_Global.a_create), rolesRepository))
+    			new SimpleGrantedAuthority(Roles_Global.a_create), rolesRepository, projectRepository))
     		return new ResponseEntity<String>("missing authories for current action", HttpStatus.FORBIDDEN);
     	
     	roadmapRepository.save(roadmap);
@@ -108,7 +108,7 @@ public class RoadmapController {
     		@AuthenticationPrincipal MyUserDetails userDetails,
     		@RequestBody Roadmap roadmap){
     	if (!Roles_Global.hasAuthorities(userDetails, roadmap.getProjectId(), 
-    			new SimpleGrantedAuthority(Roles_Global.a_edit), rolesRepository))
+    			new SimpleGrantedAuthority(Roles_Global.a_edit), rolesRepository, projectRepository))
     		return new ResponseEntity<String>("missing authories for current action", HttpStatus.FORBIDDEN);
     	
     	roadmapRepository.save(roadmap);
@@ -124,7 +124,7 @@ public class RoadmapController {
     		Integer projectId = roadmapRepository.getById(id).getProjectId();
     		
         	if (!Roles_Global.hasAuthorities(userDetails, projectId, 
-        			new SimpleGrantedAuthority(Roles_Global.a_delete), rolesRepository))
+        			new SimpleGrantedAuthority(Roles_Global.a_delete), rolesRepository, projectRepository))
         		return new ResponseEntity<String>("missing authories for current action", HttpStatus.FORBIDDEN);
 		} catch (EntityNotFoundException e) {
     		return new ResponseEntity<String>("trying to get a roadmap that doesn't exist?", HttpStatus.I_AM_A_TEAPOT);

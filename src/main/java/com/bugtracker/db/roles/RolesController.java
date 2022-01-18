@@ -7,6 +7,8 @@ import java.util.Optional;
 import javax.management.relation.Role;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -20,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.bugtracker.db.project.ProjectRepository;
 import com.bugtracker.db.user.MyUserDetails;
 
 @RestController
@@ -27,11 +30,14 @@ import com.bugtracker.db.user.MyUserDetails;
 public class RolesController {
 
 	@Autowired
-	private RolesRepository roleRepository;
+	RolesRepository rolesRepository;
+	
+	@Autowired
+	ProjectRepository projectRepository;
 	
 	@GetMapping("/all")
 	public List<Roles> getAllRoles(){
-		return roleRepository.findAll();
+		return rolesRepository.findAll();
 	}
 	
 	@GetMapping("/currentRoles")
@@ -47,31 +53,52 @@ public class RolesController {
 	
 	@GetMapping("/username/{username}")
 	public List<Roles> getAllRolesByUsername(@PathVariable String username) {
-		return roleRepository.findAllByRolesIdentityUsername(username);
+		return rolesRepository.findAllByRolesIdentityUsername(username);
 	}
 	
 	@GetMapping("/projectId/{projectId}")
 	public List<Roles> getAllRolesByProjectId(@PathVariable Integer projectId) {
-		return roleRepository.findAllByRolesIdentityProjectId(projectId);
+		return rolesRepository.findAllByRolesIdentityProjectId(projectId);
 	}
 	
 	@GetMapping
 	public Roles getRolesByIdentity(@RequestBody RolesIdentity identity) {
-		return roleRepository.findByRolesIdentity(identity);
+		return rolesRepository.findByRolesIdentity(identity);
 	}
 
+	//TODO check if the user making the request has authority to do this request
 	@PostMapping
-	public Roles addRole(@RequestBody Roles role) {
-		return roleRepository.save(role);
+	public ResponseEntity<String> addRole(
+			@AuthenticationPrincipal MyUserDetails userDetails,
+			@RequestBody Roles role) {
+		if (!role.getManageProject() && !role.getManageUsers())
+		{
+	    	if (!Roles_Global.hasAuthorities(userDetails, role.getRolesIdentity().getProjectId(), 
+	    			new SimpleGrantedAuthority(Roles_Global.a_manage_users), rolesRepository, projectRepository))
+	    		return new ResponseEntity<String>("missing authories for current action", HttpStatus.FORBIDDEN);
+		} else if (!role.getManageProject()) {
+	    	if (!Roles_Global.hasAuthorities(userDetails, role.getRolesIdentity().getProjectId(), 
+	    			new SimpleGrantedAuthority(Roles_Global.a_manage_project), rolesRepository, projectRepository))
+	    		return new ResponseEntity<String>("missing authories for current action", HttpStatus.FORBIDDEN);
+		} else {
+			if (!Roles_Global.isOwner(userDetails, role.getRolesIdentity().getProjectId(), projectRepository))
+	    		return new ResponseEntity<String>("missing authories for current action", HttpStatus.FORBIDDEN);
+		}
+		rolesRepository.save(role);
+		return ResponseEntity.ok("ok");
 	}
 	
 	@PutMapping
-	public Roles updateTopic(@RequestBody Roles role) {
-		return roleRepository.save(role);
+	public ResponseEntity<String> updateRoles(
+			@AuthenticationPrincipal MyUserDetails userDetails,
+			@RequestBody Roles role) {
+		return new ResponseEntity<String>("the post request is being used because there is no way to know whether a user is in the database", HttpStatus.SERVICE_UNAVAILABLE); 
+		//return roleRepository.save(role);
 	}
 	
-	@DeleteMapping("/{username}")
-	public Boolean deleteTopic(@RequestBody RolesIdentity identity){
-		return roleRepository.deleteByRolesIdentity(identity);
+	//TODO check if the user making the request has authority to do this request
+	@DeleteMapping
+	public Boolean deleteRoles(@RequestBody RolesIdentity identity){
+		return rolesRepository.deleteByRolesIdentity(identity);
 	}
 }

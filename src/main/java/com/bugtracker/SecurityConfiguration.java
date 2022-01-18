@@ -56,24 +56,28 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     			.antMatchers(HttpMethod.GET, "/boards/**").authenticated()
     			.antMatchers(HttpMethod.GET, "/tasks/**").authenticated()
     			.antMatchers(HttpMethod.GET, "/roadmaps/**").authenticated()
+    			.antMatchers(HttpMethod.GET, "/roles/**").authenticated()
     			
                 .antMatchers(HttpMethod.POST, "/project/**").authenticated()
     			.antMatchers(HttpMethod.POST, "/btj/**").authenticated()
             	.antMatchers(HttpMethod.POST, "/boards/**").authenticated()
             	.antMatchers(HttpMethod.POST, "/tasks/**").authenticated()
             	.antMatchers(HttpMethod.POST, "/roadmaps/**").authenticated()
+    			.antMatchers(HttpMethod.POST, "/roles/**").authenticated()
 
                 .antMatchers(HttpMethod.PUT, "/project/**").authenticated()
             	.antMatchers(HttpMethod.PUT, "/btj/**").authenticated()
             	.antMatchers(HttpMethod.PUT, "/boards/**").authenticated()
             	.antMatchers(HttpMethod.PUT, "/tasks/**").authenticated()
             	.antMatchers(HttpMethod.PUT, "/roadmaps/**").authenticated()
+    			.antMatchers(HttpMethod.PUT, "/roles/**").authenticated()
 
                 .antMatchers(HttpMethod.DELETE, "/project/**").authenticated()
             	.antMatchers(HttpMethod.DELETE, "/btj/**").authenticated()
             	.antMatchers(HttpMethod.DELETE, "/boards/**").authenticated()
             	.antMatchers(HttpMethod.DELETE, "/tasks/**").authenticated()
             	.antMatchers(HttpMethod.DELETE, "/roadmaps/**").authenticated()
+    			.antMatchers(HttpMethod.DELETE, "/roles/**").authenticated()
             	
 				.antMatchers(HttpMethod.GET, "/**").hasAuthority(Roles_Global.r_owner)
     			.antMatchers(HttpMethod.DELETE, "/**").hasAuthority(Roles_Global.r_owner)

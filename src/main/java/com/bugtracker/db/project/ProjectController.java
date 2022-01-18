@@ -87,7 +87,7 @@ public class ProjectController {
 			@RequestBody Project project,
 			@AuthenticationPrincipal MyUserDetails userDetails) {
 		if (!Roles_Global.hasAuthorities(userDetails, project.getId(),
-				new SimpleGrantedAuthority(Roles_Global.a_manage_project), rolesRepository))
+				new SimpleGrantedAuthority(Roles_Global.a_manage_project), rolesRepository, projectRepository))
 			return new ResponseEntity<String>("missing authories for current action", HttpStatus.FORBIDDEN);
 		
 		project.setOwnerId(userDetails.getUsername());

@@ -24,6 +24,7 @@ import com.bugtracker.WebConfiguration;
 import com.bugtracker.db.boards.BoardRepository;
 import com.bugtracker.db.boards.tasks.Task;
 import com.bugtracker.db.boards.tasks.TaskRepository;
+import com.bugtracker.db.project.ProjectRepository;
 import com.bugtracker.db.roles.RolesRepository;
 import com.bugtracker.db.roles.Roles_Global;
 import com.bugtracker.db.user.MyUserDetails;
@@ -46,6 +47,9 @@ public class BTJController {
 		
 		@Autowired
 		RolesRepository rolesRepository;
+		
+		@Autowired
+		ProjectRepository projectRepository;
 	 	
 	    @GetMapping("/all")
 	    public List<BoardTaskJoin> getAllBTJ(){
@@ -75,7 +79,7 @@ public class BTJController {
 		    	Integer projectId = boardRepository.findById(bid).get().getProjectId();
 		    	
 		    	if (!Roles_Global.hasAuthorities(userDetails, projectId, 
-		    			new SimpleGrantedAuthority(Roles_Global.a_delete), rolesRepository))
+		    			new SimpleGrantedAuthority(Roles_Global.a_delete), rolesRepository, projectRepository))
 		    		return new ResponseEntity<String>("missing authories for current action", HttpStatus.FORBIDDEN);
 	    	} catch (EntityNotFoundException | NullPointerException e) {
 	    		return new ResponseEntity<String>("trying to edit a task that doesn't exist?", HttpStatus.I_AM_A_TEAPOT);
@@ -127,7 +131,7 @@ public class BTJController {
 		    		return new ResponseEntity<String>("Can't swap boards between projects", HttpStatus.BAD_REQUEST);
 		    	
 		    	if (!Roles_Global.hasAuthorities(userDetails, projectId, 
-		    			new SimpleGrantedAuthority(Roles_Global.a_edit), rolesRepository))
+		    			new SimpleGrantedAuthority(Roles_Global.a_edit), rolesRepository, projectRepository))
 		    		return new ResponseEntity<String>("missing authories for current action", HttpStatus.FORBIDDEN);
 	    	} catch (EntityNotFoundException | NullPointerException e) {
 	    		return new ResponseEntity<String>("trying to edit a task that doesn't exist?", HttpStatus.I_AM_A_TEAPOT);
