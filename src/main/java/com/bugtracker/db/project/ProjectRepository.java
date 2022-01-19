@@ -7,5 +7,4 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface ProjectRepository extends JpaRepository<Project, Integer>{
 	List<Project> findAllByIdIn(List<Integer> ids);
-	Project findByProjectId(Integer projectId);
 }

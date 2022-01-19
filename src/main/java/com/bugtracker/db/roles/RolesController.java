@@ -1,18 +1,14 @@
 package com.bugtracker.db.roles;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
-
-import javax.management.relation.Role;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -61,9 +57,49 @@ public class RolesController {
 		return rolesRepository.findAllByRolesIdentityProjectId(projectId);
 	}
 	
+	@GetMapping("/username/{username}/projectId/{projectId}")
+	public ResponseEntity<Roles> getAllRolesByIdentity(
+			@AuthenticationPrincipal MyUserDetails userDetails,
+			@PathVariable String username,
+			@PathVariable Integer projectId){
+		
+		RolesIdentity rolesIdentity = new RolesIdentity(username, projectId);
+		
+		List<GrantedAuthority> authorities = new ArrayList<>();
+		authorities.add(new SimpleGrantedAuthority(Roles_Global.a_manage_project));
+		authorities.add(new SimpleGrantedAuthority(Roles_Global.a_manage_users));
+				
+		if (rolesIdentity.getUsername().equals(userDetails.getUsername()) || Roles_Global.hasAuthorities(userDetails, rolesIdentity.getProjectId(), 
+    			authorities, rolesRepository, projectRepository)) {
+			return new ResponseEntity<Roles>(rolesRepository.findByRolesIdentity(rolesIdentity), HttpStatus.OK);
+		} else
+			return new ResponseEntity<Roles>((Roles) null, HttpStatus.FORBIDDEN);
+	}
+	
 	@GetMapping
-	public Roles getRolesByIdentity(@RequestBody RolesIdentity identity) {
-		return rolesRepository.findByRolesIdentity(identity);
+	public String getRolesByIdentityNOTWORKING(
+			@AuthenticationPrincipal MyUserDetails userDetails,
+			@RequestBody RolesIdentityOnly identity) {
+		
+		return "this shit doesn't want to work for some F****** reason use the more primitive one above in code or xxx.xxx.xxx/roles/username/{}/projectId/{}";
+		/*
+		RolesIdentity rolesIdentity = new RolesIdentity(identity.getUsername(), identity.getProjectId());
+		
+		List<Roles> test = new ArrayList<>();
+		
+		List<GrantedAuthority> authorities = new ArrayList<>();
+		authorities.add(new SimpleGrantedAuthority(Roles_Global.a_manage_project));
+		authorities.add(new SimpleGrantedAuthority(Roles_Global.a_manage_users));
+				
+		if (rolesIdentity.getUsername().equals(userDetails.getUsername()) || Roles_Global.hasAuthorities(userDetails, rolesIdentity.getProjectId(), 
+    			authorities, rolesRepository, projectRepository)) {
+			//return new ResponseEntity<Roles>(rolesRepository.findByRolesIdentity(identity.getRolesIdentity()), HttpStatus.OK);
+			test.add(rolesRepository.findByRolesIdentity(rolesIdentity))
+			return test;
+		} else
+			//return new ResponseEntity<Roles>((Roles) null, HttpStatus.FORBIDDEN);
+			return null;
+			*/
 	}
 
 	//TODO check if the user making the request has authority to do this request
@@ -80,10 +116,8 @@ public class RolesController {
 	    	if (!Roles_Global.hasAuthorities(userDetails, role.getRolesIdentity().getProjectId(), 
 	    			new SimpleGrantedAuthority(Roles_Global.a_manage_project), rolesRepository, projectRepository))
 	    		return new ResponseEntity<String>("missing authories for current action", HttpStatus.FORBIDDEN);
-		} else {
-			if (!Roles_Global.isOwner(userDetails, role.getRolesIdentity().getProjectId(), projectRepository))
-	    		return new ResponseEntity<String>("missing authories for current action", HttpStatus.FORBIDDEN);
 		}
+		
 		rolesRepository.save(role);
 		return ResponseEntity.ok("ok");
 	}

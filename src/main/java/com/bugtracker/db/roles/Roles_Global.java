@@ -46,20 +46,6 @@ public class Roles_Global {
 		}
     }
     
-    
-    public static Boolean isOwner(
-    		@NonNull MyUserDetails userDetails,
-    		@NonNull Integer projectId,
-    		@NonNull ProjectRepository projectRepository) {
-    	Project project = projectRepository.findByProjectId(projectId);
-    	if (project == null) {
-    		return false;
-    	}
-    	else if (project.getOwnerId().equals(userDetails.getUsername())) {
-    		return true;
-    	}
-    	return false;
-    }
 
 	/**
 	 * @apiNote checks if the user has authorities to access an url
@@ -92,8 +78,23 @@ public class Roles_Global {
     				return true;
     		}
     		
-    		System.out.print("authority error");
     		return false;
     	}   
     }
+    
+    
+    public static Boolean isOwner(
+    		@NonNull MyUserDetails userDetails,
+    		@NonNull Integer projectId,
+    		@NonNull ProjectRepository projectRepository) {
+    	Project project = projectRepository.getById(projectId);
+    	if (project == null) {
+    		return false;
+    	}
+    	else if (project.getOwnerId().equals(userDetails.getUsername())) {
+    		return true;
+    	}
+    	return false;
+    }
+
 }

@@ -41,7 +41,7 @@ public class RolesIdentity implements Serializable {
 	public void setProjectId(Integer projectId) {
 		this.projectId = projectId;
 	}
-	
+		
 	@Override
     public boolean equals(Object o) {
         if (this == o) return true;
