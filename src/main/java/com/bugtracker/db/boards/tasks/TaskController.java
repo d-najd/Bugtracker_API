@@ -73,7 +73,6 @@ public class TaskController {
 	    		return new ResponseEntity<String>("trying to remove task that doesn't exist?", HttpStatus.I_AM_A_TEAPOT);
 	    	}
 	    	
-	    	
 	    	taskRepository.deleteById(id);
 	    	return ResponseEntity.ok("ok");
 	    }
@@ -82,6 +81,21 @@ public class TaskController {
 	    @GetMapping("/{id}")
 	    public Optional<Task> getTaskById(@PathVariable Integer id) {
 	    	return taskRepository.findById(id);
+	    }
+	    
+	    @PutMapping
+	    public ResponseEntity<String> editTask(
+	    		@AuthenticationPrincipal MyUserDetails userDetails,
+	    		@RequestBody Task task){
+	    	
+    		Integer bid = btjRepository.findOneByBtjIdentityTaskId(
+	    			task.getId()).getBtjIdentity().getBoardId();
+	    	Integer projectId = boardRepository.getById(bid).getProjectId();
+	    
+	    	if (!Roles_Global.hasAuthorities(userDetails, projectId, new SimpleGrantedAuthority(Roles_Global.a_edit), rolesRepository, projectRepository))
+	    		return new ResponseEntity<String>("missing authories for current action", HttpStatus.FORBIDDEN);
+	    	taskRepository.save(task);
+	    	return ResponseEntity.ok("ok");
 	    }
 	    
 	    @PostMapping("/boards/{bid}")

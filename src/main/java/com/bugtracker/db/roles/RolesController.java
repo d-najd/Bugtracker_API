@@ -21,6 +21,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.bugtracker.db.project.ProjectRepository;
 import com.bugtracker.db.user.MyUserDetails;
 
+import net.bytebuddy.asm.Advice.Return;
+
 @RestController
 @RequestMapping("/roles")
 public class RolesController {
@@ -48,12 +50,16 @@ public class RolesController {
 	}
 	
 	@GetMapping("/username/{username}")
-	public List<Roles> getAllRolesByUsername(@PathVariable String username) {
+	public List<Roles> getAllRolesByUsername(
+			@AuthenticationPrincipal MyUserDetails userDetails,
+			@PathVariable String username) {
 		return rolesRepository.findAllByRolesIdentityUsername(username);
 	}
 	
 	@GetMapping("/projectId/{projectId}")
-	public List<Roles> getAllRolesByProjectId(@PathVariable Integer projectId) {
+	public List<Roles> getAllRolesByProjectId(
+			@AuthenticationPrincipal MyUserDetails userDetails,
+			@PathVariable Integer projectId) {
 		return rolesRepository.findAllByRolesIdentityProjectId(projectId);
 	}
 	
@@ -102,11 +108,14 @@ public class RolesController {
 			*/
 	}
 
-	//TODO check if the user making the request has authority to do this request
 	@PostMapping
 	public ResponseEntity<String> addRole(
 			@AuthenticationPrincipal MyUserDetails userDetails,
 			@RequestBody Roles role) {
+		if (role.getRolesIdentity().getUsername().equals(userDetails.getUsername())) {
+			return new ResponseEntity<String>("you can't change you own roles youself", HttpStatus.BAD_REQUEST);
+		}
+		
 		if (!role.getManageProject() && !role.getManageUsers())
 		{
 	    	if (!Roles_Global.hasAuthorities(userDetails, role.getRolesIdentity().getProjectId(), 
@@ -115,6 +124,9 @@ public class RolesController {
 		} else if (!role.getManageProject()) {
 	    	if (!Roles_Global.hasAuthorities(userDetails, role.getRolesIdentity().getProjectId(), 
 	    			new SimpleGrantedAuthority(Roles_Global.a_manage_project), rolesRepository, projectRepository))
+	    		return new ResponseEntity<String>("missing authories for current action", HttpStatus.FORBIDDEN);
+		} else {
+			if (!Roles_Global.isOwner(userDetails, role.getRolesIdentity().getProjectId(), projectRepository))
 	    		return new ResponseEntity<String>("missing authories for current action", HttpStatus.FORBIDDEN);
 		}
 		
@@ -130,9 +142,37 @@ public class RolesController {
 		//return roleRepository.save(role);
 	}
 	
-	//TODO check if the user making the request has authority to do this request
-	@DeleteMapping
-	public Boolean deleteRoles(@RequestBody RolesIdentity identity){
-		return rolesRepository.deleteByRolesIdentity(identity);
+	@DeleteMapping("/username/{username}/projectId/{projectId}")
+	public ResponseEntity<String> deleteRoles(
+			@AuthenticationPrincipal MyUserDetails userDetails,
+			@PathVariable String username,
+			@PathVariable Integer projectId){
+		
+		try {
+			RolesIdentity rolesIdentity = new RolesIdentity(username, projectId);
+			Roles roles = rolesRepository.findByRolesIdentity(rolesIdentity);
+
+			if (userDetails.getUsername().equals(username) && !Roles_Global.isOwner(userDetails, projectId, projectRepository)) {
+				System.out.print("is owner");
+			}			
+			else if (!roles.getManageProject() && !roles.getManageUsers())
+			{
+		    	if (!Roles_Global.hasAuthorities(userDetails, projectId, 
+		    			new SimpleGrantedAuthority(Roles_Global.a_manage_users), rolesRepository, projectRepository))
+		    		return new ResponseEntity<String>("missing authories for current action", HttpStatus.FORBIDDEN);
+			} else if (!roles.getManageProject()) {
+		    	if (!Roles_Global.hasAuthorities(userDetails, projectId, 
+		    			new SimpleGrantedAuthority(Roles_Global.a_manage_project), rolesRepository, projectRepository))
+		    		return new ResponseEntity<String>("missing authories for current action", HttpStatus.FORBIDDEN);
+			} else {
+				if (!Roles_Global.isOwner(userDetails, projectId, projectRepository))
+		    		return new ResponseEntity<String>("missing authories for current action", HttpStatus.FORBIDDEN);
+			}
+			System.out.print("deleting by identity");
+			rolesRepository.deleteById(rolesIdentity);
+			return ResponseEntity.ok("ok");
+		} catch (Exception e) {
+			return new ResponseEntity<String>("bad request m8", HttpStatus.BAD_REQUEST);
+		}
 	}
 }

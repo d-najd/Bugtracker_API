@@ -48,6 +48,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         	
 				.antMatchers(HttpMethod.POST, "/users").permitAll()
 				.antMatchers(HttpMethod.GET, "/users").authenticated()
+				.antMatchers(HttpMethod.GET, "/users/**").authenticated()
     			
     			//anyone who belongs to the project is allowed to get the project data       
     				

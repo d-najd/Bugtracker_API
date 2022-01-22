@@ -10,7 +10,9 @@ public interface RolesRepository extends JpaRepository<Roles, RolesIdentity> {
 	public List<Roles> findAllByRolesIdentityUsername(String username);
 	public List<Roles> findAllByRolesIdentityProjectId(Integer projectId);
 	public Roles findByRolesIdentity(RolesIdentity identity);
-	public Boolean deleteByRolesIdentity(RolesIdentity identity);
+	
+	//use delete by id
+	//public Boolean deleteByRolesIdentity(RolesIdentity identity);
 	
 	//public Roles findOneByUsername(String username);
 }
