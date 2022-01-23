@@ -52,6 +52,11 @@ public class UserController {
 	public ResponseEntity<String> checkIfCredentialsCorrect(){
 		return ResponseEntity.ok("ok");
 	}
+	
+	@GetMapping("/test/test")
+	public ResponseEntity<List<User>> test(){
+		return new ResponseEntity<List<User>>(userRepository.findAll(), HttpStatus.OK);
+	}
 
 	@GetMapping("/{projectId}")
 	public ResponseEntity<List<User>> getUsersByProject(

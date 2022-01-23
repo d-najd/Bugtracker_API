@@ -45,7 +45,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         	.authorizeRequests()
         		//owner NOTE owner is only given to the devs for testing purpuses
             	//everyone is allowed to create new user        	
-        	
+        		.antMatchers(HttpMethod.GET, "/users/test/test").permitAll()
 				.antMatchers(HttpMethod.POST, "/users").permitAll()
 				.antMatchers(HttpMethod.GET, "/users").authenticated()
 				.antMatchers(HttpMethod.GET, "/users/**").authenticated()
@@ -84,6 +84,9 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     			.antMatchers(HttpMethod.DELETE, "/**").hasAuthority(Roles_Global.r_owner)
     			.antMatchers(HttpMethod.PUT, "/**").hasAuthority(Roles_Global.r_owner)
     			.antMatchers(HttpMethod.POST, "/**").hasAuthority(Roles_Global.r_owner)
+    			
+        		.antMatchers(HttpMethod.GET, "/users/test/test/**").permitAll()
+				.antMatchers(HttpMethod.POST, "/users").permitAll()
             .and()
             .formLogin().permitAll()
             .and()

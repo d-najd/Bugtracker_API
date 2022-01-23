@@ -10,9 +10,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class QueryConstructor {
-	private static final String dbLocation = "jdbc:mysql://localhost:3306/bugtracker_db?useSSL=false";
-	private static final String dbUname = "root";
-	private static final String dbPass = "j6t2gu6k46ek";
+	private static final String dbLocation = WebConfiguration.dbLocation;
+	private static final String dbUname = WebConfiguration.dbUname;
+	private static final String dbPass = WebConfiguration.dbPass;
 	
 	public static void sendQuery (String query) throws SQLException {
         ArrayList<String> queries = new ArrayList<String>(List.of(query));

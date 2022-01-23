@@ -3,7 +3,6 @@ package com.bugtracker.db.btj;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import javax.persistence.EntityNotFoundException;
 
@@ -22,7 +21,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.bugtracker.QueryConstructor;
 import com.bugtracker.WebConfiguration;
 import com.bugtracker.db.boards.BoardRepository;
-import com.bugtracker.db.boards.tasks.Task;
 import com.bugtracker.db.boards.tasks.TaskRepository;
 import com.bugtracker.db.project.ProjectRepository;
 import com.bugtracker.db.roles.RolesRepository;
@@ -81,9 +79,11 @@ public class BTJController {
 		    	if (!Roles_Global.hasAuthorities(userDetails, projectId, 
 		    			new SimpleGrantedAuthority(Roles_Global.a_delete), rolesRepository, projectRepository))
 		    		return new ResponseEntity<String>("missing authories for current action", HttpStatus.FORBIDDEN);
-	    	} catch (EntityNotFoundException | NullPointerException e) {
+	    	} catch (NullPointerException e) {
 	    		return new ResponseEntity<String>("trying to edit a task that doesn't exist?", HttpStatus.I_AM_A_TEAPOT);
-			}	    	
+			}	catch (EntityNotFoundException e) {
+	    		return new ResponseEntity<String>("trying to edit a task that doesn't exist?", HttpStatus.I_AM_A_TEAPOT);
+			}
 	    	final String query = "UPDATE board_tasks SET position = position - 1 WHERE EXISTS ("
 	    			+ "	SELECT boards_tasks_join.task_id"
 	    			+ "	FROM boards_tasks_join"

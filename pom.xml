@@ -11,6 +11,7 @@
 	<groupId>com.bugtracker</groupId>
 	<artifactId>bugtracker-api-data</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
+	<packaging>jar</packaging>
 	<name>Bugtracker_API-1</name>
 	<description>bugtracker android app api</description>
 	<properties>
@@ -60,6 +61,9 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
+				<configuration>
+					<finalName>bugtracker_server</finalName>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>
