@@ -7,8 +7,6 @@ import java.util.List;
 import javax.persistence.EntityNotFoundException;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.ExitCodeEvent;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.GrantedAuthority;
@@ -27,12 +25,9 @@ import org.springframework.web.bind.annotation.RestController;
 import com.bugtracker.QueryConstructor;
 import com.bugtracker.db.boards.tasks.TaskRepository;
 import com.bugtracker.db.project.ProjectRepository;
-import com.bugtracker.db.roadmaps.Roadmap;
 import com.bugtracker.db.roles.RolesRepository;
 import com.bugtracker.db.roles.Roles_Global;
 import com.bugtracker.db.user.MyUserDetails;
-
-import net.bytebuddy.asm.Advice.Exit;
 
 
 @RestController
