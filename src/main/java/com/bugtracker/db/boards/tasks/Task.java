@@ -42,6 +42,16 @@ public class Task {
     public Task(){
     	super();
     }
+    
+	public Task(Integer id, Integer position, String title, String description, String dateCreated, Set<Board> boards) {
+		super();
+		this.id = id;
+		this.position = position;
+		this.title = title;
+		this.description = description;
+		this.dateCreated = dateCreated;
+		this.boards = boards;
+	}
 
 	public Integer getId() {
 		return id;

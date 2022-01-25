@@ -79,6 +79,14 @@ public class ProjectController {
 		project = projectRepository.save(project);
 		Roles roles = new Roles(userDetails.getUsername(), project.getId(), true, true, true, true, true);
 		rolesRepository.save(roles);
+		
+		Board todoBoard = new Board(null, project.getId(), 0, "TO DO", null);
+		Board inProgressBoard = new Board(null, project.getId(), 1, "IN PROGRESS", null);
+		Board doneBoard = new Board(null, project.getId(), 2, "DONE", null);
+		
+		boardRepository.save(todoBoard);
+		boardRepository.save(inProgressBoard);
+		boardRepository.save(doneBoard);
 		return ResponseEntity.ok("ok");
 	}
 	

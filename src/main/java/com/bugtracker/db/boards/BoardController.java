@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.bugtracker.QueryConstructor;
+import com.bugtracker.db.boards.tasks.Task;
 import com.bugtracker.db.boards.tasks.TaskRepository;
 import com.bugtracker.db.project.ProjectRepository;
 import com.bugtracker.db.roles.RolesRepository;
@@ -68,7 +69,7 @@ public class BoardController {
     			new SimpleGrantedAuthority(Roles_Global.a_create), rolesRepository, projectRepository))
     		return new ResponseEntity<String>("missing authories for current action", HttpStatus.FORBIDDEN);
 		
-    	boardRepository.save(board);
+        boardRepository.save(board);
     	return ResponseEntity.ok("ok");
     }
     
