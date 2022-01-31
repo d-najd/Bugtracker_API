@@ -25,7 +25,7 @@ public class Roles_Global {
 	 * @apiNote checks if the user has authority to access an url
 	 * @param userDetails the user details
 	 * @param projectId projectId that you want to check if the user has the authority to access
-	 * @param authoritiy if the user has the authority he will get access, if the authority is null it won't be checked against and return true
+	 * @param authoritiy if the user has the authority he will get access, if the authority is null it will only be checked if the user is member of the project if not it will return false
 	 * @return true if the user is allowed access false if not 
 	 */
 	
@@ -51,7 +51,7 @@ public class Roles_Global {
 	 * @apiNote checks if the user has authorities to access an url
 	 * @param userDetails the user details
 	 * @param projectId projectId that you want to check if the user has the authorities to access
-	 * @param authorities if user has any of the authorities it will allow access, if authorities are null or the size is 0 it won't check for authorities
+	 * @param authorities if user has any of the authorities it will allow access, if authorities are null or the size is 0 it will check if the user if member of the project if not it will return false
 	 * @return true if the user is allowed access false if not 
 	 */
     public static Boolean hasAuthorities(@NonNull MyUserDetails userDetails,

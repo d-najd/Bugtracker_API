@@ -10,7 +10,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Configuration
 public class WebConfiguration implements WebMvcConfigurer{
 	public static String dbLocation = "jdbc:mysql://bugtracker_database/bugtracker_db?useSSL=false";
-	public static String dbUname = "root";
+	public static String dbUname = "user1";
 	public static String dbPass = "j6t2gu6k46ek";
 	
 	//public static String dbLocation = "jdbc:mysql://bugtracker_database/bugtracker_db?useSSL=false";

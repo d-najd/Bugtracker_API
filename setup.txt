@@ -1,0 +1,33 @@
+####################################################################################################################################
+#		setting up maven and openjdk (needs to be run in powershell with administrator priviliges)                         #                  
+#	run the following commands (NOTE you might have to change a few fields especailly the names of the docker containers       #                   
+####################################################################################################################################
+
+#installs choco, required for the installation of maven and openjdk
+Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
+
+#installation of openjdk required for maven
+choco install openjdk
+
+#installation of maven
+choco install maven
+
+#check maven version to know if it was successfully setup
+mvn --version
+
+
+#############################################################################################################
+#setup of the mysql database in docker (REQUIRMENT mysql workbench with the database "bugtracker_db" running#
+# 		and docker installed), commands need to be ran in powershell     			    #
+#############################################################################################################
+
+#creation of the network
+docker network create bugtracker_network
+
+#creation of the database
+docker run --name bugtracker_database -e MYSQL_ROOT_PASSWORD=j6t2gu6k46ek -e MYSQL_PASSWORD=j6t2gu6k46ek -e MYSQL_DATABASE=bugtracker_db -e MYSQL_USER=user1 --network bugtracker_network -d mysql
+
+#the setup of the server is in a file called "automation.exe" run it with powershell and the database will be setup on localhost:8080
+#the script can be run to install the server and add new code to it
+
+#NOTE the code for automation.exe is in a file called automation.ps1, had to make it into exe because windows didn't want to run the file I had to manualy select the option

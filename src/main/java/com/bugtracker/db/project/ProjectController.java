@@ -89,7 +89,7 @@ public class ProjectController {
 		boardRepository.save(doneBoard);
 		return ResponseEntity.ok("ok");
 	}
-	
+
 	@PutMapping
 	public ResponseEntity<String> editProject(
 			@RequestBody Project project,

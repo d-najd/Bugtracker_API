@@ -102,7 +102,6 @@ public class RoadmapController {
     	return ResponseEntity.ok("ok");
     }
     
-    
     @PutMapping
     public ResponseEntity<String> editRoadmap(
     		@AuthenticationPrincipal MyUserDetails userDetails,
