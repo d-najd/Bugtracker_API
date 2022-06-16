@@ -1,4 +1,8 @@
 # Bugtracker_API
+
+kodot e star pa ne koristi design patterns ili oop mnogu
+
+
 setup:
 
   read setup.txt for initial setup
